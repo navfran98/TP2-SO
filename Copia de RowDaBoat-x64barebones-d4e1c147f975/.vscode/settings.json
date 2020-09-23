@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "screen_driver.h": "c",
+        "video_driver.h": "c",
+        "lib.h": "c",
+        "string.h": "c",
+        "stdint.h": "c",
+        "stdio.h": "c"
+    }
+}
