@@ -1,12 +1,45 @@
 GLOBAL syscall_write
 GLOBAL syscall_read
 GLOBAL num_to_string
+GLOBAL syscall_malloc
 
 section .bss
-    numstr resb 10  ; used by num_to_string function
+    numstr resb 10  ; used by num_to_string function 
 
 
 section .text
+
+syscall_malloc:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 5      ;ID para malloc
+    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
+    mov rcx, 1      ;idem
+    mov rdx, rdi    ;Le paso el size
+
+    int 80h
+
+    mov rax, rdx
+
+    pop rdx
+    pop rcx
+    pop rbx
+    ;pop rax
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+;;MI IDEA ES QUE LA SYSCALL RETORNE EL VALOR QUE OBTUVO.
+;;sino vemos despues como hacemos
+
+
+
 
 syscall_write:
     push rbp

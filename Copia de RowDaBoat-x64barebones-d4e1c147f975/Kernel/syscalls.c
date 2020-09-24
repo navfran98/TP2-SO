@@ -1,18 +1,29 @@
-#include <screen_driver.h>
+#include <screen_driver.h> 
 #include <time.h>   /* may be implemented in the future */
 #include <keyboard.h>
+#include <mm.h>
 
 #define STD_INTPUT 0
 #define STD_OUTPUT 1
 #define RTC 3
 #define TIMER_TICK 4    /* may be implemented in the future */
+#define MALLOC_SYS 5
+#define FREE_SYS 6
 
 extern int segundos();
 extern int minutos();
 extern int horas();
 
-void syscall_dispatcher(int ID, int file_descriptor, char* string, int length/*NEVER USED*/  ) {
+void syscall_dispatcher(int ID, int file_descriptor, char* string, unsigned size ) {
     switch(ID){
+
+        case 5:{ //MALLOC syscall
+           my_malloc(size); 
+            
+           break;
+        }
+
+
         case 4:{   // WRITE syscall
             switch(file_descriptor){
                 case STD_OUTPUT:{

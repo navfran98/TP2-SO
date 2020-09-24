@@ -2,6 +2,7 @@
 #include "shellCommands.h"
 #include "string.h"
 #include <stdint.h>
+#include "alloc.h"
 
 #define SHELL_BUFFER_SIZE (128)+(128/2)  // 1 linea y media
 
@@ -11,8 +12,42 @@ static int search_command(char command_with_possible_parameter[], char* paramete
 static char shell_buffer[SHELL_BUFFER_SIZE] = {'\0'};
 static uint8_t k = 0; // to move across the buffer
 
+
 void start_shell() {
     print(">>");
+
+    print(" Prueba de malloc antes de ejecutar la shell\n...  ");
+
+
+    print("METO 1MB\n");
+    char * prueba = syscall_malloc(1024 * 1024 * 2);
+    print("-----------------\n\n");
+
+    print("METO 200MB\n");
+    prueba = syscall_malloc( 1024 * 1024 * 200);
+    print("-----------------\n\n");
+
+    print("METO 3MB\n");
+    syscall_malloc(1024 * 1024 * 3);
+     print("-----------------\n\n");
+
+
+    print("METO 5MB\n");
+    syscall_malloc(1024 * 1024 * 5);
+     print("-----------------\n\n");
+
+
+     print("METO 4MB\n");
+     syscall_malloc(1024 * 1024 * 4);
+      print("-----------------\n\n");
+
+
+    if(prueba != (void *) 0){
+        print("EXITO");
+    }else
+        print("FAILURE");
+
+
     shell_main();
 }
 
