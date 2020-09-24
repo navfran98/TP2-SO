@@ -24,7 +24,7 @@ syscall_malloc:
 
     int 80h
 
-    mov rax, rdx
+    
 
     pop rdx
     pop rcx

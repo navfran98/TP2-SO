@@ -19,27 +19,32 @@ void start_shell() {
     print(" Prueba de malloc antes de ejecutar la shell\n...  ");
 
 
-    print("METO 1MB\n");
-    char * prueba = syscall_malloc(1024 * 1024 * 2);
+    print("METO 8MB\n");
+    char * prueba = syscall_malloc(1024 * 1024 * 8);
     print("-----------------\n\n");
 
-    print("METO 200MB\n");
-    prueba = syscall_malloc( 1024 * 1024 * 200);
+    print("METO 2MB\n");
+    prueba = syscall_malloc( 1024 * 1024 * 2);
     print("-----------------\n\n");
 
-    print("METO 3MB\n");
-    syscall_malloc(1024 * 1024 * 3);
-     print("-----------------\n\n");
+    print("METO 2MB\n");
+    prueba = syscall_malloc( 1024 * 1024 * 2);
+    print("-----------------\n\n");
+
+    // print("METO 3MB\n");
+    // syscall_malloc(1024 * 1024 * 3);
+    //  print("-----------------\n\n");
 
 
-    print("METO 5MB\n");
-    syscall_malloc(1024 * 1024 * 5);
-     print("-----------------\n\n");
+    // print("METO 5MB\n");
+    // syscall_malloc(1024 * 1024 * 5);
+    //  print("-----------------\n\n");
 
 
-     print("METO 4MB\n");
-     syscall_malloc(1024 * 1024 * 4);
-      print("-----------------\n\n");
+    //  print("METO 4MB\n");
+    //  syscall_malloc(1024 * 1024 * 4);
+    //   print("-----------------\n\n");
+
 
 
     if(prueba != (void *) 0){

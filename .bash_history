@@ -22,3 +22,73 @@ make clean
 ps
 ps -n
 exit
+cd root/
+cd Copia\ de\ RowDaBoat-x64barebones-d4e1c147f975/
+clear
+make clean
+make all
+cd Kernel/
+ls
+cat mm.c
+cd ..
+make all
+clear
+make all
+clear
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make clean
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make clean
+make all
+make all
+make clean
+make clean
+exit

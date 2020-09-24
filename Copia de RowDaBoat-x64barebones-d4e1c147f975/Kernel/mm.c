@@ -1,4 +1,5 @@
 #include <screen_driver.h> 
+#include <mm.h>
 
 #define NULL (void *) 0
 
@@ -23,37 +24,42 @@ void * my_malloc(unsigned size_bytes){
 
 
 	if((prev = freep) == NULL){
-
-		free_list.next = freep = prev->next = base_mem;
-		free_list.size = prev->next->size = total_mem;
+		free_list.next = freep = prev = &free_list;
+		free_list.size = total_mem;
+		my_free(&free_list);
+		drawString("ENtro aca\n");
+		// free_list.size = prev->next->size = total_mem;
 		// free(base->next);
-		// base.next = prev = freep = &base;
 		// free_mem = total_mem;
 		// used_mem = 0;
 	}
 
-	unsigned nunits = (size_bytes + sizeof(Theader) - 1)/sizeof(Theader) + 1;
+	// unsigned nunits = (size_bytes + sizeof(Theader) - 1)/sizeof(Theader) + 1;
 
-	drawString(nunits);
-
-
+	unsigned nunits = size_bytes;
 	for(p = prev->next; ; prev = p, p = p->next){
 
-		if(p == (void*) 0x5000000){
-			drawString((char*) &p);
+		if(p->size == total_mem){
+			drawString("p tiene una memoria de: Total_Mem\n");
 		}
-		
+
+		if(p->size == 0){
+			drawString("p tiene una memoria de: Cero\n");
+		}
+
 		if(p->size >= nunits){
 			drawString("SI Hay espacio en este bloque\n");
-			
-			if(p->size == nunits){
-				drawString("size == nunits\n");
-				prev->next = p->next;
-			}else{
-				drawString("lo toy metiendo\n");
+			 if(p->size == nunits){
+			// 	drawString("size == nunits\n");
 				p->size -= nunits;
-				p += p->size;
-				p->size = nunits;
+			 	p += p->size;
+			 	p->size = nunits;
+			 	prev->next = p->next; //lo elimina a p"""
+			 }else{
+			// 	drawString("lo toy metiendo\n");
+			 	p->size -= nunits;
+			 	p += p->size;
+			 	p->size = nunits;
 			}
 			drawString("retorno la direccion\n");
 			freep = prev;
@@ -64,7 +70,6 @@ void * my_malloc(unsigned size_bytes){
 			return NULL;
 		}
 		drawString("NO HAY ESPACIO en este bloque\n");
-		
 	}
 	
 }
