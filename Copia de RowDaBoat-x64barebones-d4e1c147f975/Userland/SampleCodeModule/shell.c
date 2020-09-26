@@ -23,10 +23,11 @@ void start_shell() {
     char * prueba = syscall_malloc(1024 * 1024 * 1);
     print("-----------------\n\n");
 
+
     print("LIBERO ESE 1MB\n");
-    void * ptr = (void *)0x9000000;
-    ptr += 1024 * 1024 * 9;
-    syscall_free(ptr);
+    // void * ptr = (void *)0x9000000;
+    // ptr += 1024 * 1024 * 9;
+    syscall_free(prueba);
 
     // print("METO 2MB\n");
     // prueba = syscall_malloc( 1024 * 1024 * 2);

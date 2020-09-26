@@ -14,7 +14,7 @@ extern int segundos();
 extern int minutos();
 extern int horas();
 
-void syscall_dispatcher(int ID, int file_descriptor, void * string, unsigned size, void * ptr) {
+void syscall_dispatcher(int ID, int file_descriptor, void * string, unsigned size, void * ptr) { 
     switch(ID){
 
         case FREE_SYS:{
@@ -41,7 +41,7 @@ void syscall_dispatcher(int ID, int file_descriptor, void * string, unsigned siz
         case 3:{   // READ syscall
             switch(file_descriptor){
                 case STD_INTPUT:{  // read from the keyboard buffer
-                    // string[0] = get_keyboard_buffer();
+                   // string[0] = get_keyboard_buffer();
                     break;
                 }
                 case RTC:{

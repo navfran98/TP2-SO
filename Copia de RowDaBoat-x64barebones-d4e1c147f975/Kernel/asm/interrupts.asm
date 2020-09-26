@@ -115,7 +115,7 @@ picSlaveMask:
     pop     rbp
     retn
 
-_systemCallsHandler:
+_systemCallsHandler: 
 	pushState
 	mov rdi, rax  ; 1st parameter
 	mov rsi, rbx  ; 2nd parameter
