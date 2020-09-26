@@ -14,10 +14,15 @@ extern int segundos();
 extern int minutos();
 extern int horas();
 
-void syscall_dispatcher(int ID, int file_descriptor, char* string, unsigned size ) {
+void syscall_dispatcher(int ID, int file_descriptor, void * string, unsigned size, void * ptr) {
     switch(ID){
 
-        case 5:{ //MALLOC syscall
+        case FREE_SYS:{
+            my_free(string);
+            break;
+        }
+
+        case MALLOC_SYS:{ //MALLOC syscall
            my_malloc(size); 
             
            break;
@@ -36,16 +41,16 @@ void syscall_dispatcher(int ID, int file_descriptor, char* string, unsigned size
         case 3:{   // READ syscall
             switch(file_descriptor){
                 case STD_INTPUT:{  // read from the keyboard buffer
-                    string[0] = get_keyboard_buffer();
+                    // string[0] = get_keyboard_buffer();
                     break;
                 }
                 case RTC:{
-                    int seg = segundos();
-					int min = minutos();
-					int hora = horas();
-					string[0]=hora/10 + 0x30; string[1]=hora%10 + 0x30;
-					string[3]=min/10 + 0x30; string[4]=min%10 + 0x30;
-					string[6]=seg/10 + 0x30; string[7]=seg%10 + 0x30;
+                    // int seg = segundos();
+					// int min = minutos();
+					// int hora = horas();
+					// string[0]=hora/10 + 0x30; string[1]=hora%10 + 0x30;
+					// string[3]=min/10 + 0x30; string[4]=min%10 + 0x30;
+					// string[6]=seg/10 + 0x30; string[7]=seg%10 + 0x30;
 					break;
                 }
             }

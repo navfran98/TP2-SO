@@ -19,17 +19,22 @@ void start_shell() {
     print(" Prueba de malloc antes de ejecutar la shell\n...  ");
 
 
-    print("METO 8MB\n");
-    char * prueba = syscall_malloc(1024 * 1024 * 8);
+    print("METO 1MB\n");
+    char * prueba = syscall_malloc(1024 * 1024 * 1);
     print("-----------------\n\n");
 
-    print("METO 2MB\n");
-    prueba = syscall_malloc( 1024 * 1024 * 2);
-    print("-----------------\n\n");
+    print("LIBERO ESE 1MB\n");
+    void * ptr = (void *)0x9000000;
+    ptr += 1024 * 1024 * 9;
+    syscall_free(ptr);
 
-    print("METO 2MB\n");
-    prueba = syscall_malloc( 1024 * 1024 * 2);
-    print("-----------------\n\n");
+    // print("METO 2MB\n");
+    // prueba = syscall_malloc( 1024 * 1024 * 2);
+    // print("-----------------\n\n");
+
+    // print("METO 2MB\n");
+    // prueba = syscall_malloc( 1024 * 1024 * 2);
+    // print("-----------------\n\n");
 
     // print("METO 3MB\n");
     // syscall_malloc(1024 * 1024 * 3);
@@ -45,12 +50,20 @@ void start_shell() {
     //  syscall_malloc(1024 * 1024 * 4);
     //   print("-----------------\n\n");
 
+    //   print("METO 2MB\n");
+    // prueba = syscall_malloc( 1024 * 1024 * 2);
+    // print("-----------------\n\n");
+
+    // print("METO 2MB\n");
+    // prueba = syscall_malloc( 1024 * 1024 * 2);
+    // print("-----------------\n\n");
 
 
-    if(prueba != (void *) 0){
-        print("EXITO");
-    }else
-        print("FAILURE");
+
+    // if(prueba != (void *) 0){
+    //     print("EXITO");
+    // }else
+    //     print("FAILURE");
 
 
     shell_main();
