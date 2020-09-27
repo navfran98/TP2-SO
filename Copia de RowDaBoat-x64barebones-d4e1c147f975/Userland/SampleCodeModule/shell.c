@@ -18,58 +18,31 @@ void start_shell() {
 
     print(" Prueba de malloc antes de ejecutar la shell\n...  ");
 
-
     print("METO 1MB\n");
-    char * prueba = syscall_malloc(1024 * 1024 * 1);
+    void * prueba = (void *) syscall_malloc(1024 * 1024 * 1);
     print("-----------------\n\n");
 
-
-    print("LIBERO ESE 1MB\n");
-    // void * ptr = (void *)0x9000000;
-    // ptr += 1024 * 1024 * 9;
+    if(prueba == (void *) 0x800000){
+        print("me cago en dios\n");
+    }
+    
+    print("\n\nLIBERO 1MB\n");
+    void * n = (void *) 0x800000;
     syscall_free(prueba);
-
-    // print("METO 2MB\n");
-    // prueba = syscall_malloc( 1024 * 1024 * 2);
-    // print("-----------------\n\n");
-
-    // print("METO 2MB\n");
-    // prueba = syscall_malloc( 1024 * 1024 * 2);
-    // print("-----------------\n\n");
-
-    // print("METO 3MB\n");
-    // syscall_malloc(1024 * 1024 * 3);
-    //  print("-----------------\n\n");
-
-
-    // print("METO 5MB\n");
-    // syscall_malloc(1024 * 1024 * 5);
-    //  print("-----------------\n\n");
-
-
-    //  print("METO 4MB\n");
-    //  syscall_malloc(1024 * 1024 * 4);
-    //   print("-----------------\n\n");
-
-    //   print("METO 2MB\n");
-    // prueba = syscall_malloc( 1024 * 1024 * 2);
-    // print("-----------------\n\n");
-
-    // print("METO 2MB\n");
-    // prueba = syscall_malloc( 1024 * 1024 * 2);
-    // print("-----------------\n\n");
-
-
-
-    // if(prueba != (void *) 0){
-    //     print("EXITO");
-    // }else
-    //     print("FAILURE");
-
 
     shell_main();
 }
 
+    // syscall_check_mem_state(vec);
+    // if(vec[0] == 1024 * 1024 * 10){
+    //     print("TOTAL MEM OKA\n");
+    // }
+    // if(vec[1] == 1024 * 1024 * 10){
+    //     print("FREE MEM OKA\n");
+    // }
+    // if(vec[2] == 0){
+    //     print("USED MEM OKA\n");
+    // }
 static void shell_main() {
     char c;
     int command;
@@ -142,4 +115,5 @@ static int search_command(char command_with_possible_parameter[], char* paramete
     }
 
     return number_of_command;
+
 }

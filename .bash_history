@@ -181,3 +181,39 @@ make all
 make all
 exit
 exit
+cd root/
+cd Copia\ de\ RowDaBoat-x64barebones-d4e1c147f975/
+ls
+make clean
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+make all
+exit
