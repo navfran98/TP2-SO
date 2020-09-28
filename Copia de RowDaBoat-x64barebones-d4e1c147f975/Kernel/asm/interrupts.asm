@@ -22,6 +22,40 @@ EXTERN syscall_dispatcher
 
 SECTION .text
 
+%macro pushStateSyscalls 0
+	push rbx
+	push rcx
+	push rdx
+	push rbp
+	push rdi
+	push rsi
+	push r8
+	push r9
+	push r10
+	push r11
+	push r12
+	push r13
+	push r14
+	push r15
+%endmacro
+
+%macro popStateSyscalls 0
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rsi
+	pop rdi
+	pop rbp
+	pop rdx
+	pop rcx
+	pop rbx
+%endmacro
+
 %macro pushState 0
 	push rax
 	push rbx
@@ -116,14 +150,15 @@ picSlaveMask:
     retn
 
 _systemCallsHandler: 
-	pushState
+	pushStateSyscalls
 	mov rdi, rax  ; 1st parameter
 	mov rsi, rbx  ; 2nd parameter
 	mov rax, rdx
 	mov rdx, rcx  ; 3rd parameter
 	mov rcx, rax  ; 4th parameter
+	mov r8, r8    ; 5th parameter
 	call syscall_dispatcher
-	popState
+	popStateSyscalls
 	iretq
 
 ;8254 Timer (Timer Tick)

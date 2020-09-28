@@ -28,6 +28,8 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+static void * base_mem = (void *) 0x700000;  
+static uint64_t total_mem = 1024 * 1024 * 100;
 
 typedef int (*EntryPoint)();
 
@@ -71,22 +73,24 @@ void * initializeKernelBinary() {
 
 	clearBSS(&bss, &endOfKernel - &bss);
 
-	ncPrint("  text: 0x");
-	ncPrintHex((uint64_t)&text);
-	ncNewline();
-	ncPrint("  rodata: 0x");
-	ncPrintHex((uint64_t)&rodata);
-	ncNewline();
-	ncPrint("  data: 0x");
-	ncPrintHex((uint64_t)&data);
-	ncNewline();
-	ncPrint("  bss: 0x");
-	ncPrintHex((uint64_t)&bss);
-	ncNewline();
+	// ncPrint("  text: 0x");
+	// ncPrintHex((uint64_t)&text);
+	// ncNewline();
+	// ncPrint("  rodata: 0x");
+	// ncPrintHex((uint64_t)&rodata);
+	// ncNewline();
+	// ncPrint("  data: 0x");
+	// ncPrintHex((uint64_t)&data);
+	// ncNewline();
+	// ncPrint("  bss: 0x");
+	// ncPrintHex((uint64_t)&bss);
+	// ncNewline();
 
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
+	free_list_init(base_mem, total_mem);
+
+	// ncPrint("[Done]");
+	// ncNewline();
+	// ncNewline();
 	return getStackBase();
 }
 

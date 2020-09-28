@@ -19,30 +19,57 @@ void start_shell() {
     print(" Prueba de malloc antes de ejecutar la shell\n...  ");
 
     print("METO 1MB\n");
-    void * prueba = (void *) syscall_malloc(1024 * 1024 * 1);
+    char * prueba = (char *) syscall_malloc(sizeof(char)*10);
+    print("\n-----------------\n\n");
+
+    
+    print("METO 3MB\n");
+    void * prueba2 = (void *) syscall_malloc(1024 * 1024 * 3);    
     print("-----------------\n\n");
 
-    if(prueba == (void *) 0x800000){
-        print("me cago en dios\n");
+ print("METO 2MB\n");
+    void * prueba3 = (void *) syscall_malloc(1024 * 1024 * 2);  
+    print("-----------------\n\n");
+
+    uint64_t * vec = 0;
+    syscall_check_mem_state(vec);
+    if(vec[0] == 1024 * 1024 * 100){
+        print("TOTAL MEM malloc OKA\n");
     }
+    if(vec[1] < 1024 * 1024 * 100){
+        print("FREE MEM malloc OKA\n");
+    }
+    if(vec[2] != 0){
+        print("USED MEM malloc OKA\n");
+    }
+
+    print("-----------------\n\n");
+
     
     print("\n\nLIBERO 1MB\n");
-    void * n = (void *) 0x800000;
     syscall_free(prueba);
+
+    print("\n\nLIBERO 2MB\n");
+    syscall_free(prueba3);
+
+    print("\n\nLIBERO 3MB\n");
+    syscall_free(prueba2);
+    
+    syscall_check_mem_state(vec);
+    if(vec[0] == 1024 * 1024 * 100){
+        print("TOTAL MEM  free OKA\n");
+    }
+    if(vec[1] == 1024 * 1024 * 100){
+        print("FREE MEM free OKA\n");
+    }
+    if(vec[2] == 0){
+        print("USED MEM free OKA\n");
+    }
 
     shell_main();
 }
 
-    // syscall_check_mem_state(vec);
-    // if(vec[0] == 1024 * 1024 * 10){
-    //     print("TOTAL MEM OKA\n");
-    // }
-    // if(vec[1] == 1024 * 1024 * 10){
-    //     print("FREE MEM OKA\n");
-    // }
-    // if(vec[2] == 0){
-    //     print("USED MEM OKA\n");
-    // }
+
 static void shell_main() {
     char c;
     int command;

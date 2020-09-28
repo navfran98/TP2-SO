@@ -58,8 +58,6 @@ syscall_check_mem_state:
 
     int 80h
 
-    
-
     pop rdx
     pop rcx
     pop rbx
