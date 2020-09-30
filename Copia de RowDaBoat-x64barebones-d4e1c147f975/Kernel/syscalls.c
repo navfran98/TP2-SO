@@ -2,6 +2,7 @@
 #include <time.h>   /* may be implemented in the future */
 #include <keyboard.h>
 #include <free_list_allocator.h>
+#include <buddy_allocator.h>
 #include <stdint.h>
 
 #define STD_INTPUT 0
@@ -11,6 +12,9 @@
 #define MALLOC_SYS 5
 #define FREE_SYS 6
 #define CHECK_MEM_STATE 7
+#define BUDDY_MALLOC 8
+#define BUDDY_FREE 9
+#define CHECK_MEM_STATE_BUDDY 10
 
 extern int segundos();
 extern int minutos();
@@ -29,11 +33,25 @@ void syscall_dispatcher(int ID, int file_descriptor, char * string, uint64_t siz
             free_list_mem_state((uint64_t *) ptr);
             break;
         }
-
-        case MALLOC_SYS:{ //MALLOC syscall
-           return (uint64_t *) free_list_malloc(size); 
-           break;
+        
+        case CHECK_MEM_STATE_BUDDY:{
+            buddy_check_mem_state((uint64_t *) ptr);
+            break;
         }
+
+        case MALLOC_SYS:{ 
+            return (void *) free_list_malloc(size); 
+            break;
+        }
+        case BUDDY_FREE:{ 
+            buddy_free((void*) ptr); 
+            break;
+        }
+        case BUDDY_MALLOC:{ 
+            return (void *) buddy_malloc(size); 
+            break;
+        }
+
 
         case 4:{   // WRITE syscall
             switch(file_descriptor){

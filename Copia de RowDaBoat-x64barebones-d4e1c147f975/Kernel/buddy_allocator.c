@@ -4,20 +4,22 @@
 #include <lib.h>
 
 #define NULL (void *) 0
-#define MAX_LEVELS 32 /* 2^32 = 4GB. */
+#define MAX_LEVELS 26 /* 2^26 = 64MB. */
 #define BLOCKS_PER_LEVEL(lvl) (1<<(lvl))
 #define SIZE_OF_BLOCKS_AT_LEVEL(lvl,total_size) ((total_size) / (1<<(lvl)))
 #define INDEX_OF_POINTER_IN_LEVEL(pointer,lvl,memory_start,total_size) \
    (((pointer)-(memory_start)) / (SIZE_OF_BLOCKS_AT_LEVEL(lvl, total_size)))
 
+static void * base_mem = (void *) 0x700000;  
+static uint64_t total_mem = 1024 * 1024 * 64;
+static uint64_t * tree_base_address = (uint64_t *) 0x900000;
 
-void * tree_base_address = 0x02000;
-void * base_mem = 0x05000; 
-uint64_t total_mem = 1024*1024*10;
+
 
 enum state {OCCUPIED, FREE, PARTIALLY_OCCUPIED};
 
 typedef struct Tlevel{
+
    void * starting_address;
 
    struct Tlevel * left;
@@ -43,6 +45,7 @@ static buddy_list_header buddy;
 void occupy_children(block * block);
 void free_children(block * block);
 void update_states(block * node);
+void _generate_children(block * parent, buddy_list_header buddy_tree);
 
 void generate_buddy_tree(void * base_mem, uint64_t total_mem){
 
@@ -63,7 +66,7 @@ void generate_buddy_tree(void * base_mem, uint64_t total_mem){
 }
 
 void _generate_children(block * parent, buddy_list_header buddy_tree){
-   if(parent->level < MAX_LEVELS-1){
+   if(parent->level < MAX_LEVELS){
       block left_block;
       left_block.starting_address = parent->starting_address;
       left_block.level = parent->level +1;
@@ -73,15 +76,15 @@ void _generate_children(block * parent, buddy_list_header buddy_tree){
       memcpy(parent->left, &left_block, sizeof(block));
 
       block right_block;
-      right_block.starting_address = parent->starting_address  + SIZE_OF_BLOCKS_AT_LEVEL(parent->level,buddy_tree.total_mem);
+      right_block.starting_address = parent->starting_address  + SIZE_OF_BLOCKS_AT_LEVEL(parent->level + 1,buddy_tree.total_mem);
       right_block.level = parent->level + 1;
       right_block.state = FREE;
       right_block.parent = parent;
 
       memcpy(parent->right, &right_block,sizeof(block));
 
-      generate_children(parent->left, buddy_tree);
-      generate_children(parent->right, buddy_tree);
+      _generate_children(parent->left, buddy_tree);
+      _generate_children(parent->right, buddy_tree);
    }
 
    return;
@@ -89,13 +92,13 @@ void _generate_children(block * parent, buddy_list_header buddy_tree){
 }
 
 uint8_t get_level(uint8_t size){
-   buddy_list_header * buddy_tree = tree_base_address;
-   if(size>buddy_tree->free_mem)
+   buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
+   if(size > buddy_tree->free_mem)
       return -1;
 
    int level = 0;
-   int aux = total_mem;
-
+   int aux = total_mem;  
+            
    while(aux >= size && level < MAX_LEVELS){
       aux /= 2;
       level++;
@@ -107,7 +110,7 @@ void * buddy_malloc(uint64_t size){
    uint8_t level = get_level(size);
    //get_level me devuelve -1 si ese tamaño es más grande que el tamaño que tengo disponible
    if(level != -1){
-      buddy_list_header * buddy_tree = tree_base_address;
+      buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
       block* aux = buddy_tree->root;
 
       if(buddy_tree->root->state == FREE){
@@ -115,9 +118,10 @@ void * buddy_malloc(uint64_t size){
             aux = aux->left;
          }
       }
-      else{
+      else{ 
+
          while(aux->level != level){
-            if(aux->left->state == PARTIALLY_OCCUPIED || aux->left->state == FREE){
+            if(aux->left->state == PARTIALLY_OCCUPIED || aux->left->state == FREE){      
                aux = aux->left;
             }
             else{
@@ -126,6 +130,8 @@ void * buddy_malloc(uint64_t size){
          }
       }
       aux->state = OCCUPIED;
+      buddy_tree->free_mem -= SIZE_OF_BLOCKS_AT_LEVEL(aux->level,total_mem);
+      buddy_tree->used_mem += SIZE_OF_BLOCKS_AT_LEVEL(aux->level,total_mem);
       update_states(aux);
       occupy_children(aux);
       return aux->starting_address;
@@ -134,9 +140,6 @@ void * buddy_malloc(uint64_t size){
 }
 
 
-void * buddy_free(void * ptr){
-
-}
 
 void update_states(block * node){
    block * aux = node->parent;
@@ -155,7 +158,7 @@ void update_states(block * node){
 }
 
 void occupy_children(block * block){
-   if(block->level < MAX_LEVELS-1){
+   if(block->level < MAX_LEVELS){
       block->left->state = OCCUPIED;
       block->right->state = OCCUPIED;
       occupy_children(block->left);
@@ -171,31 +174,38 @@ void free_children(block * block){
    }
 }
 
+
 void buddy_free(void * ptr){
-   buddy_list_header * tree = tree_base_address;
+   buddy_list_header * tree = (buddy_list_header *) tree_base_address;
    block * node = tree->root;
-   if(ptr < node->starting_address){
+   if((ptr < node->starting_address) && (ptr > node->starting_address + total_mem)){
       return;
    }
 
    while(node->starting_address != ptr){
-      if(node->level < MAX_LEVELS){
+      if(node->level > MAX_LEVELS){
          return;
       }
       node = node->right;
    }
    while(node->state != OCCUPIED){
-      if(node->level < MAX_LEVELS){
+      if(node->level > MAX_LEVELS){
          return;
       }
       node = node->left;
    }
-      
+
    node->state = FREE;
+   tree->free_mem += SIZE_OF_BLOCKS_AT_LEVEL(node->level,total_mem);
+   tree->used_mem -= SIZE_OF_BLOCKS_AT_LEVEL(node->level,total_mem);
    free_children(node);
    update_states(node);
 }
 
-
-
+void buddy_check_mem_state(uint64_t * state){
+   buddy_list_header * tree = (buddy_list_header *) tree_base_address;
+   state[0] = tree->total_mem;
+   state[1] = tree->free_mem;
+   state[2] = tree->used_mem;
+}
 

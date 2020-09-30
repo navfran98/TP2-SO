@@ -4,6 +4,9 @@ GLOBAL num_to_string
 GLOBAL syscall_malloc
 GLOBAL syscall_free
 GLOBAL syscall_check_mem_state
+GLOBAL syscall_buddy_malloc
+GLOBAL syscall_buddy_free
+GLOBAL syscall_buddy_check_mem_state
 
 section .bss
     numstr resb 10  ; used by num_to_string function 
@@ -12,6 +15,85 @@ section .bss
 section .text
 
 
+
+syscall_buddy_check_mem_state:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 10     ;ID para malloc
+    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
+    mov rcx, 1      ;idem
+    mov rdx, 1      ;idem
+    mov r8, rdi
+
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    ;pop rax
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+
+syscall_buddy_malloc:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 8      ;ID para malloc del buddy
+    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
+    mov rcx, 1      ;idem
+    mov rdx, rdi    ;Le paso el size
+    mov r8, 1
+
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    ;pop rax
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+
+syscall_buddy_free:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 9      ;ID para free del buddy
+    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
+    mov rcx, 1      ;idem
+    mov rdx, 1      ;idem
+    mov r8, rdi     ;le paso la direccion
+
+    int 80h
+
+    
+
+    pop rdx
+    pop rcx
+    pop rbx
+    ;pop rax
+
+    mov rsp, rbp
+    pop rbp
+    ret
 
 
 
