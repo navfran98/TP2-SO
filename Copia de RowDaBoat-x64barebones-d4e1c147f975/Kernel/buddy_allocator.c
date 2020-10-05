@@ -3,59 +3,19 @@
 #include <stdint.h>
 #include <lib.h>
 
-/*
-
-#define MEM_SIZE 1048576 // 1 MiB (a parte de la usada para el arbol)
-
-#define TREE_ADDRESS ((void *) 0x0000000000050000L)
-#define TREE_END_ADDRESS ((void *) 0x000000000009FFFFL)
-#define TREE_MAX_SIZE ((uint64_t)((uint64_t)TREE_END_ADDRESS - (uint64_t)TREE_ADDRESS)) // 327680
-#define MAX_NODES 8192 // 2^(floor(log2((TREE_MAX_SIZE / sizeof(Node))))    (MAXIMA CANTIDAD DE NODOS QUE ENTRAN ENTRE TREE_ADDRESS Y TREE_END_ADDRESS)
-#define MIN_BLOCK_SIZE (MEM_SIZE / MAX_NODES) // 128
-
-#define MAX_LIST_NODES 8192  //2^(floor(log2((TREE_MAX_SIZE - sizeof(List))/ sizeof(ListNode)))    (MAXIMA CANTIDAD DE NODOS QUE ENTRAN ENTRE TREE_ADDRESS Y TREE_END_ADDRESS)
-#define MIN_PAGE_SIZE (MEM_SIZE / MAX_LIST_NODES) // 128
-
-
-
-
-#define MEM_STARTING_ADDRESS ((void *)0x0000000000700000) // Tiene que haber 1MB continuo libre desde aca
-
-
-
-
-
-*/
-
-
-
-
-
-#define MEM_SIZE 1048576 // 1 MiB (a parte de la usada para el arbol)
 #define NULL (void *) 0
-#define MAX_LEVELS 13 /* 2^13 = MB. */
+#define MAX_LEVELS 4 
 #define BLOCKS_PER_LEVEL(lvl) (1<<(lvl))
 #define SIZE_OF_BLOCKS_AT_LEVEL(lvl,total_size) ((total_size) / (1<<(lvl)))
 #define INDEX_OF_POINTER_IN_LEVEL(pointer,lvl,memory_start,total_size) \
    (((pointer)-(memory_start)) / (SIZE_OF_BLOCKS_AT_LEVEL(lvl, total_size)))
-#define BASE_MEM ((void *) 0x700000)
 #define TREE_ADDRESS ((void *) 0x0000000000050000L)
 
-
-
-
-
-
-static void * base_mem = (void *) 0x700000;  
-static uint64_t total_mem = MEM_SIZE;
-
+static uint64_t * block_base_address = (uint64_t *) (0x900000);
 static uint64_t * tree_base_address = (uint64_t *) TREE_ADDRESS;
-
-
 enum state {OCCUPIED, FREE, PARTIALLY_OCCUPIED};
 
 typedef struct Tlevel{
-
    void * starting_address;
 
    struct Tlevel * left;
@@ -76,21 +36,15 @@ typedef struct buddy_list_header{
 
 } buddy_list_header; 
 
-static uint64_t * block_base_address = (uint64_t *) (0x900000);
-
-
 void occupy_children(block * block);
 void free_children(block * block);
 void update_states(block * node);
 uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64_t i);
 void * _alloc(uint8_t level, block*node);
 
-
-
-
-
-
-
+void printTabs(int level);
+void printTree(block * root);
+void printState(block* n);
 
 void generate_buddy_tree(void * base_mem, uint64_t total_mem){
    
@@ -109,25 +63,17 @@ void generate_buddy_tree(void * base_mem, uint64_t total_mem){
    buddy_tree->root->parent = NULL;
    buddy_tree->root->left = (block*) block_base_address + 1;
    buddy_tree->root->right = (block*) block_base_address + 2;
-   buddy_tree->root->starting_address = BASE_MEM;
+   buddy_tree->root->starting_address = base_mem; 
 
-
-  
-
-   drawNumber(_generate_children(buddy_tree->root, *buddy_tree,3),123123,10);
-   int i;
-   block * aux = buddy_tree->root;
-   for(i=0; aux != NULL; aux = aux->left,i++){
-      drawNumber(i,323123,14);
-      
-   };  
+   int i = _generate_children(buddy_tree->root, *buddy_tree,3);
+   block * aux = (block*) block_base_address;
+   aux = (block*) block_base_address;
+   buddy_tree->root = aux;
 }
 
 uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64_t i){
 
    if(parent->level < MAX_LEVELS-1){
-      
-
       parent->left->starting_address = parent->starting_address;
       parent->left->level = parent->level + 1;
       parent->left->state = FREE;
@@ -137,10 +83,7 @@ uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64
       parent->left->left = (block *) block_base_address +  i;
       i++;
    
-
-   
-   
-      parent->right->starting_address = parent->starting_address  + SIZE_OF_BLOCKS_AT_LEVEL(parent->level + 1, buddy_tree.total_mem);
+      parent->right->starting_address = (void * ) parent->starting_address  + SIZE_OF_BLOCKS_AT_LEVEL(parent->level + 1, buddy_tree.total_mem);
       parent->right->level = parent->level + 1;
       parent->right->state = FREE;
       parent->right->parent = parent;
@@ -148,13 +91,8 @@ uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64
       i++;
       parent->right->left = (block*)block_base_address +  i;
       i++;
-      
-    
-      
 
       i = _generate_children(parent->left, buddy_tree,i);
-
-
       i = _generate_children(parent->right, buddy_tree,i);
    }
    else{
@@ -171,39 +109,39 @@ uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64
       parent->right->parent = parent;
       parent->right->right = NULL;
       parent->right->left = NULL;
-   
    }
    return i;
-
 }
 
-uint8_t get_level(uint8_t size){
+uint8_t get_level(uint64_t size){
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
-   
+   drawNumber(size,412412,4);
+   drawString("<-size  free mem->");
+   drawNumber(buddy_tree->free_mem,3123123,33);
+
    if(size > buddy_tree->free_mem)
       return -1;
 
    int level = 0;
-   int aux = total_mem;  
+   int aux = buddy_tree->total_mem;  
             
-   while(aux >= size && level < MAX_LEVELS){
+   while(aux > size && level < MAX_LEVELS){
       aux /= 2;
       level++;
    }
-
-
-   return level - 1;
+   return level;
 }
 
 void * buddy_malloc(uint64_t size){
    uint8_t level = get_level(size);
+
    //get_level me devuelve -1 si ese tamaño es más grande que el tamaño que tengo disponible
    if(level != -1){
       buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
       void * to_ret = _alloc(level,buddy_tree->root); 
       if(to_ret != NULL){
-         buddy_tree->free_mem -= size;
-         buddy_tree->used_mem += size;
+         buddy_tree->free_mem -= SIZE_OF_BLOCKS_AT_LEVEL(level, buddy_tree->total_mem);
+         buddy_tree->used_mem += SIZE_OF_BLOCKS_AT_LEVEL(level, buddy_tree->total_mem);
       }
       return to_ret;
       //return _alloc(level, buddy_tree->root);
@@ -218,7 +156,6 @@ void * _alloc(uint8_t level, block*node){
          occupy_children(node);
          update_states(node);
          return node->starting_address;
-
       }
       else
          return NULL;
@@ -263,6 +200,7 @@ void occupy_children(block * block){
       occupy_children(block->right);
    }
 }
+
 void free_children(block * block){
    if(block->right != NULL){
       block->left->state = FREE;
@@ -271,7 +209,6 @@ void free_children(block * block){
       free_children(block->right);
    }
 }
-
 
 void buddy_free(void * ptr){
    buddy_list_header * tree = (buddy_list_header *) tree_base_address;
@@ -306,44 +243,46 @@ void buddy_free(void * ptr){
    drawNumber(node->starting_address);
 }
 
-
 void buddy_check_mem_state(uint64_t * state){
    buddy_list_header * tree = (buddy_list_header *) tree_base_address;
    state[0] = tree->total_mem;
    state[1] = tree->free_mem;
    state[2] = tree->used_mem;
+
+   drawString("Total mem: ");
+   drawNumber(tree->total_mem, 33333,3);
+   drawString("\nFree mem: ");
+   drawNumber(tree->free_mem, 33333,3);
+   drawString("\nUsed mem: ");
+   drawNumber(tree->used_mem, 33333,3);
 }
 
+void printTabs(int level){
+	if (level == 0)
+		return;
+	while (level !=0 ){
+		drawString("I");
+		drawString("       ");
+		level--;
+	}
+	drawString("I->");
+}
 
+void printState(block * n){
+	if (n->state == FREE)
+		drawString("FREE\n");
+	else if (n->state == OCCUPIED)
+		drawString("OCCUPIED\n");
+	else if (n->state == PARTIALLY_OCCUPIED){
+		drawString("PARTIALLY OCCUPIED\n");
+	}
+}
 
-/*
-void print2DUtil(Node *root, int space)  
-{  
-    // Base case  
-    if (root == NULL)  
-        return;  
-  
-    // Increase distance between levels  
-    space += COUNT;  
-  
-    // Process right child first  
-    print2DUtil(root->right, space);  
-  
-    // Print current node after space  
-    // count  
-    cout<<endl;  
-    for (int i = COUNT; i < space; i++)  
-        cout<<" ";  
-    cout<<root->data<<"\n";  
-  
-    // Process left child  
-    print2DUtil(root->left, space);  
-}  
-  
-// Wrapper over print2DUtil()  
-void print2D(Node *root)  
-{  
-    // Pass initial space count as 0  
-    print2DUtil(root, 0);  
-}  
-*/
+void printTree (block * root){
+	if (root == NULL)
+		return;
+	printTabs(root->level);
+	printState(root);
+	printTree(root->left);
+	printTree(root->right);
+}

@@ -30,7 +30,7 @@ void syscall_dispatcher(int ID, int file_descriptor, char * string, uint64_t siz
         }
 
         case CHECK_MEM_STATE:{
-            free_list_mem_state((uint64_t *) ptr);
+            free_list_check_mem_state((uint64_t *) ptr);
             break;
         }
         

@@ -18,24 +18,22 @@ void start_shell() {
 
     print(" Prueba de malloc antes de ejecutar la shell\n...  ");
 
-    print("METO 12\n");
-    char * prueba = (char *) syscall_buddy_malloc(400);
+    print("METO 4\n");
+    char * prueba = (char *) syscall_buddy_malloc(512);
     print("\n-----------------\n\n");
-    
-//     print("METO 456\n");
-//     void * prueba2 = (void *) syscall_buddy_malloc(400);    
-//     print("-----------------\n\n");
 
- print("METO 165\n");
-    void * prueba3 = (void *) syscall_buddy_malloc(400);  
-    print("-----------------\n\n");
+
+    print("METO 8 \n");
+    char * prueba2 = (char *) syscall_buddy_malloc(8);
+    print("\n-----------------\n\n");
+
 
      uint64_t * vec = 0;
      syscall_buddy_check_mem_state(vec);
-    if(vec[0] == 1024 * 1024 * 1){
+    if(vec[0] == 1024 *  1){
         print("TOTAL MEM malloc OKA\n");
     }
-    if(vec[1] < 1024 * 1024 * 1){
+    if(vec[1] < 1024 * 1){
         print("FREE MEM malloc OKA\n");
     }
     if(vec[2] != 0){
@@ -43,22 +41,19 @@ void start_shell() {
     }
 
     print("-----------------\n\n");
-
     
-    print("\n\nLIBERO 12\n");
+    syscall_buddy_free(prueba2);
     syscall_buddy_free(prueba);
 
-    print("\n\nLIBERO 165\n");
-    syscall_buddy_free(prueba3);
-
-    // print("\n\nLIBERO 465\n");
-    // syscall_buddy_free(prueba2);
     
-    syscall_check_mem_state(vec);
-    if(vec[0] == 1024 * 1024 * 1){
+    syscall_buddy_check_mem_state(vec);
+    if(vec[0] == 1024 * 1){
         print("TOTAL MEM  free OKA\n");
     }
-    if(vec[1] == 1024 * 1024 * 1){
+    else{
+        print("???");
+    }
+    if(vec[1] == 1024 * 1){
         print("FREE MEM free OKA\n");
     }
     if(vec[2] == 0){

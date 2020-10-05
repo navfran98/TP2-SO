@@ -157,7 +157,7 @@ void free_list_free(void * ptr){
 	mem.used_mem -= block->size;
 }
 
-void free_list_mem_state(uint64_t * state){
+void free_list_check_mem_state(uint64_t * state){
 	state[0] = mem.total_mem;
 	state[1] = mem.free_mem;
 	state[2] = mem.used_mem;
