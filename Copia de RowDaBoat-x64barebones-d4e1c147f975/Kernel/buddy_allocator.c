@@ -3,17 +3,53 @@
 #include <stdint.h>
 #include <lib.h>
 
+/*
+
+#define MEM_SIZE 1048576 // 1 MiB (a parte de la usada para el arbol)
+
+#define TREE_ADDRESS ((void *) 0x0000000000050000L)
+#define TREE_END_ADDRESS ((void *) 0x000000000009FFFFL)
+#define TREE_MAX_SIZE ((uint64_t)((uint64_t)TREE_END_ADDRESS - (uint64_t)TREE_ADDRESS)) // 327680
+#define MAX_NODES 8192 // 2^(floor(log2((TREE_MAX_SIZE / sizeof(Node))))    (MAXIMA CANTIDAD DE NODOS QUE ENTRAN ENTRE TREE_ADDRESS Y TREE_END_ADDRESS)
+#define MIN_BLOCK_SIZE (MEM_SIZE / MAX_NODES) // 128
+
+#define MAX_LIST_NODES 8192  //2^(floor(log2((TREE_MAX_SIZE - sizeof(List))/ sizeof(ListNode)))    (MAXIMA CANTIDAD DE NODOS QUE ENTRAN ENTRE TREE_ADDRESS Y TREE_END_ADDRESS)
+#define MIN_PAGE_SIZE (MEM_SIZE / MAX_LIST_NODES) // 128
+
+
+
+
+#define MEM_STARTING_ADDRESS ((void *)0x0000000000700000) // Tiene que haber 1MB continuo libre desde aca
+
+
+
+
+
+*/
+
+
+
+
+
+#define MEM_SIZE 1048576 // 1 MiB (a parte de la usada para el arbol)
 #define NULL (void *) 0
-#define MAX_LEVELS 26 /* 2^26 = 64MB. */
+#define MAX_LEVELS 13 /* 2^13 = MB. */
 #define BLOCKS_PER_LEVEL(lvl) (1<<(lvl))
 #define SIZE_OF_BLOCKS_AT_LEVEL(lvl,total_size) ((total_size) / (1<<(lvl)))
 #define INDEX_OF_POINTER_IN_LEVEL(pointer,lvl,memory_start,total_size) \
    (((pointer)-(memory_start)) / (SIZE_OF_BLOCKS_AT_LEVEL(lvl, total_size)))
+#define BASE_MEM ((void *) 0x700000)
+#define TREE_ADDRESS ((void *) 0x0000000000050000L)
+
+
+
+
+
 
 static void * base_mem = (void *) 0x700000;  
-static uint64_t total_mem = 1024 * 1024 * 64;
-static uint64_t * tree_base_address = (uint64_t *) 0x900000;
+static uint64_t total_mem = MEM_SIZE;
 
+static uint64_t * tree_base_address = (uint64_t *) TREE_ADDRESS;
 
 
 enum state {OCCUPIED, FREE, PARTIALLY_OCCUPIED};
@@ -40,59 +76,110 @@ typedef struct buddy_list_header{
 
 } buddy_list_header; 
 
-static buddy_list_header buddy;
+static uint64_t * block_base_address = (uint64_t *) (0x900000);
+
 
 void occupy_children(block * block);
 void free_children(block * block);
 void update_states(block * node);
-void _generate_children(block * parent, buddy_list_header buddy_tree);
+uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64_t i);
+void * _alloc(uint8_t level, block*node);
+
+
+
+
+
+
+
 
 void generate_buddy_tree(void * base_mem, uint64_t total_mem){
-
+   
+   drawNumber(sizeof(block), 124124214, 32);
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
+   
    buddy_tree->base_mem = (uint64_t*)base_mem;
    buddy_tree->total_mem = total_mem;
    buddy_tree->free_mem = total_mem;
    buddy_tree->used_mem = 0;
 
-   block root_node; 
-   root_node.state = FREE;
-   root_node.level = 0;
-   root_node.parent = NULL;
-   memcpy(buddy_tree->root, &root_node, sizeof(block));
-   
-   _generate_children(buddy_tree->root, *buddy_tree);
-   
+   buddy_tree->root = (block*) block_base_address;
+  
+   buddy_tree->root->state = FREE;
+   buddy_tree->root->level = 0;
+   buddy_tree->root->parent = NULL;
+   buddy_tree->root->left = (block*) block_base_address + 1;
+   buddy_tree->root->right = (block*) block_base_address + 2;
+   buddy_tree->root->starting_address = BASE_MEM;
+
+
+  
+
+   drawNumber(_generate_children(buddy_tree->root, *buddy_tree,3),123123,10);
+   int i;
+   block * aux = buddy_tree->root;
+   for(i=0; aux != NULL; aux = aux->left,i++){
+      drawNumber(i,323123,14);
+      
+   };  
 }
 
-void _generate_children(block * parent, buddy_list_header buddy_tree){
-   if(parent->level < MAX_LEVELS){
-      block left_block;
-      left_block.starting_address = parent->starting_address;
-      left_block.level = parent->level +1;
-      left_block.state = FREE;
-      left_block.parent = parent;
+uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64_t i){
 
-      memcpy(parent->left, &left_block, sizeof(block));
+   if(parent->level < MAX_LEVELS-1){
+      
 
-      block right_block;
-      right_block.starting_address = parent->starting_address  + SIZE_OF_BLOCKS_AT_LEVEL(parent->level + 1,buddy_tree.total_mem);
-      right_block.level = parent->level + 1;
-      right_block.state = FREE;
-      right_block.parent = parent;
+      parent->left->starting_address = parent->starting_address;
+      parent->left->level = parent->level + 1;
+      parent->left->state = FREE;
+      parent->left->parent = parent;
+      parent->left->right = (block *) block_base_address + i;
+      i++;
+      parent->left->left = (block *) block_base_address +  i;
+      i++;
+   
 
-      memcpy(parent->right, &right_block,sizeof(block));
+   
+   
+      parent->right->starting_address = parent->starting_address  + SIZE_OF_BLOCKS_AT_LEVEL(parent->level + 1, buddy_tree.total_mem);
+      parent->right->level = parent->level + 1;
+      parent->right->state = FREE;
+      parent->right->parent = parent;
+      parent->right->right = (block*)block_base_address + i;
+      i++;
+      parent->right->left = (block*)block_base_address +  i;
+      i++;
+      
+    
+      
 
-      _generate_children(parent->left, buddy_tree);
-      _generate_children(parent->right, buddy_tree);
+      i = _generate_children(parent->left, buddy_tree,i);
+
+
+      i = _generate_children(parent->right, buddy_tree,i);
    }
-
-   return;
+   else{
+      parent->left->starting_address = parent->starting_address;
+      parent->left->level = parent->level + 1;
+      parent->left->state = FREE;
+      parent->left->parent = parent;
+      parent->left->right = NULL;
+      parent->left->left = NULL;
+   
+      parent->right->starting_address = parent->starting_address  + SIZE_OF_BLOCKS_AT_LEVEL(parent->level + 1, buddy_tree.total_mem);
+      parent->right->level = parent->level + 1;
+      parent->right->state = FREE;
+      parent->right->parent = parent;
+      parent->right->right = NULL;
+      parent->right->left = NULL;
+   
+   }
+   return i;
 
 }
 
 uint8_t get_level(uint8_t size){
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
+   
    if(size > buddy_tree->free_mem)
       return -1;
 
@@ -103,6 +190,8 @@ uint8_t get_level(uint8_t size){
       aux /= 2;
       level++;
    }
+
+
    return level - 1;
 }
 
@@ -111,54 +200,63 @@ void * buddy_malloc(uint64_t size){
    //get_level me devuelve -1 si ese tamaño es más grande que el tamaño que tengo disponible
    if(level != -1){
       buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
-      block* aux = buddy_tree->root;
-
-      if(buddy_tree->root->state == FREE){
-         while(level != aux->level){
-            aux = aux->left;
-         }
+      void * to_ret = _alloc(level,buddy_tree->root); 
+      if(to_ret != NULL){
+         buddy_tree->free_mem -= size;
+         buddy_tree->used_mem += size;
       }
-      else{ 
-
-         while(aux->level != level){
-            if(aux->left->state == PARTIALLY_OCCUPIED || aux->left->state == FREE){      
-               aux = aux->left;
-            }
-            else{
-               aux = aux->right;
-            }
-         }
-      }
-      aux->state = OCCUPIED;
-      buddy_tree->free_mem -= SIZE_OF_BLOCKS_AT_LEVEL(aux->level,total_mem);
-      buddy_tree->used_mem += SIZE_OF_BLOCKS_AT_LEVEL(aux->level,total_mem);
-      update_states(aux);
-      occupy_children(aux);
-      return aux->starting_address;
+      return to_ret;
+      //return _alloc(level, buddy_tree->root);
    }
    return NULL;
 }
 
+void * _alloc(uint8_t level, block*node){
+   if(node->level == level){
+      if(node->state == FREE){
+         node->state = OCCUPIED;
+         occupy_children(node);
+         update_states(node);
+         return node->starting_address;
 
+      }
+      else
+         return NULL;
+   }
+   else{
+      if(node->state == OCCUPIED){
+         return NULL;
+      }
+      else
+      {
+         void * left_alloc = _alloc(level, node->left);
+         if(left_alloc == NULL){
+            return _alloc(level, node->right);
+         }
+         return left_alloc;
+      }
+      
+   }
+}
 
 void update_states(block * node){
    block * aux = node->parent;
-   while(node != NULL){
-      if(node->left->state == FREE && node->right->state == FREE){
-         node->state = FREE;
+   while(aux != NULL){
+      if(aux->left->state == FREE && aux->right->state == FREE){
+         aux->state = FREE;
       }
-      else if(node->left->state == OCCUPIED && node->right->state == OCCUPIED){
-         node->state = OCCUPIED;
+      else if(aux->left->state == OCCUPIED && aux->right->state == OCCUPIED){
+         aux->state = OCCUPIED;
       }
       else{
-         node->state = PARTIALLY_OCCUPIED;
+         aux->state = PARTIALLY_OCCUPIED;
       }
-      node = node->parent;
+      aux = aux->parent;
    }
 }
 
 void occupy_children(block * block){
-   if(block->level < MAX_LEVELS){
+   if(block->right != NULL){
       block->left->state = OCCUPIED;
       block->right->state = OCCUPIED;
       occupy_children(block->left);
@@ -166,11 +264,11 @@ void occupy_children(block * block){
    }
 }
 void free_children(block * block){
-   if(block->level < MAX_LEVELS){
+   if(block->right != NULL){
       block->left->state = FREE;
       block->right->state = FREE;
-      occupy_children(block->left);
-      occupy_children(block->right);
+      free_children(block->left);
+      free_children(block->right);
    }
 }
 
@@ -178,29 +276,36 @@ void free_children(block * block){
 void buddy_free(void * ptr){
    buddy_list_header * tree = (buddy_list_header *) tree_base_address;
    block * node = tree->root;
-   if((ptr < node->starting_address) && (ptr > node->starting_address + total_mem)){
-      return;
-   }
 
    while(node->starting_address != ptr){
-      if(node->level > MAX_LEVELS){
+      if(node->left == NULL && node->right == NULL){
+         drawString("\nLlegue al final y no encontre nada\n");
          return;
       }
-      node = node->right;
+      if(node->right->starting_address > ptr){
+         node = node->left;
+      }
+      else {
+         node = node ->right;
+      }
    }
    while(node->state != OCCUPIED){
-      if(node->level > MAX_LEVELS){
+      if(node->left == NULL){
+         drawString("\nLlegue al final y no encontre nada\n");
          return;
       }
       node = node->left;
    }
 
    node->state = FREE;
-   tree->free_mem += SIZE_OF_BLOCKS_AT_LEVEL(node->level,total_mem);
-   tree->used_mem -= SIZE_OF_BLOCKS_AT_LEVEL(node->level,total_mem);
+   tree->free_mem += SIZE_OF_BLOCKS_AT_LEVEL(node->level,tree->total_mem);
+   tree->used_mem -= SIZE_OF_BLOCKS_AT_LEVEL(node->level,tree->total_mem);
    free_children(node);
    update_states(node);
+   drawString("\nHago free de: ");
+   drawNumber(node->starting_address);
 }
+
 
 void buddy_check_mem_state(uint64_t * state){
    buddy_list_header * tree = (buddy_list_header *) tree_base_address;
@@ -209,3 +314,36 @@ void buddy_check_mem_state(uint64_t * state){
    state[2] = tree->used_mem;
 }
 
+
+
+/*
+void print2DUtil(Node *root, int space)  
+{  
+    // Base case  
+    if (root == NULL)  
+        return;  
+  
+    // Increase distance between levels  
+    space += COUNT;  
+  
+    // Process right child first  
+    print2DUtil(root->right, space);  
+  
+    // Print current node after space  
+    // count  
+    cout<<endl;  
+    for (int i = COUNT; i < space; i++)  
+        cout<<" ";  
+    cout<<root->data<<"\n";  
+  
+    // Process left child  
+    print2DUtil(root->left, space);  
+}  
+  
+// Wrapper over print2DUtil()  
+void print2D(Node *root)  
+{  
+    // Pass initial space count as 0  
+    print2DUtil(root, 0);  
+}  
+*/

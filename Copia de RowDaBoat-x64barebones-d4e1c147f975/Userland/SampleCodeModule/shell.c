@@ -18,53 +18,52 @@ void start_shell() {
 
     print(" Prueba de malloc antes de ejecutar la shell\n...  ");
 
-//     print("METO 1MB\n");
-//     char * prueba = (char *) syscall_buddy_malloc(sizeof(char)*10);
-//     print("\n-----------------\n\n");
-
+    print("METO 12\n");
+    char * prueba = (char *) syscall_buddy_malloc(400);
+    print("\n-----------------\n\n");
     
-//     print("METO 3MB\n");
-//     void * prueba2 = (void *) syscall_buddy_malloc(1024 * 1024 * 3);    
+//     print("METO 456\n");
+//     void * prueba2 = (void *) syscall_buddy_malloc(400);    
 //     print("-----------------\n\n");
 
-//  print("METO 2MB\n");
-//     void * prueba3 = (void *) syscall_buddy_malloc(1024 * 1024 * 2);  
-//     print("-----------------\n\n");
+ print("METO 165\n");
+    void * prueba3 = (void *) syscall_buddy_malloc(400);  
+    print("-----------------\n\n");
 
-//     uint64_t * vec = 0;
-//     syscall_buddy_check_mem_state(vec);
-//     if(vec[0] == 1024 * 1024 * 100){
-//         print("TOTAL MEM malloc OKA\n");
-//     }
-//     if(vec[1] < 1024 * 1024 * 100){
-//         print("FREE MEM malloc OKA\n");
-//     }
-//     if(vec[2] != 0){
-//         print("USED MEM malloc OKA\n");
-//     }
+     uint64_t * vec = 0;
+     syscall_buddy_check_mem_state(vec);
+    if(vec[0] == 1024 * 1024 * 1){
+        print("TOTAL MEM malloc OKA\n");
+    }
+    if(vec[1] < 1024 * 1024 * 1){
+        print("FREE MEM malloc OKA\n");
+    }
+    if(vec[2] != 0){
+        print("USED MEM malloc OKA\n");
+    }
 
-//     print("-----------------\n\n");
+    print("-----------------\n\n");
 
     
-//     print("\n\nLIBERO 1MB\n");
-//     syscall_buddy_free(prueba);
+    print("\n\nLIBERO 12\n");
+    syscall_buddy_free(prueba);
 
-//     print("\n\nLIBERO 2MB\n");
-//     syscall_buddy_free(prueba3);
+    print("\n\nLIBERO 165\n");
+    syscall_buddy_free(prueba3);
 
-//     print("\n\nLIBERO 3MB\n");
-//     syscall_buddy_free(prueba2);
+    // print("\n\nLIBERO 465\n");
+    // syscall_buddy_free(prueba2);
     
-//     syscall_check_mem_state(vec);
-//     if(vec[0] == 1024 * 1024 * 100){
-//         print("TOTAL MEM  free OKA\n");
-//     }
-//     if(vec[1] == 1024 * 1024 * 100){
-//         print("FREE MEM free OKA\n");
-//     }
-//     if(vec[2] == 0){
-//         print("USED MEM free OKA\n");
-//     }
+    syscall_check_mem_state(vec);
+    if(vec[0] == 1024 * 1024 * 1){
+        print("TOTAL MEM  free OKA\n");
+    }
+    if(vec[1] == 1024 * 1024 * 1){
+        print("FREE MEM free OKA\n");
+    }
+    if(vec[2] == 0){
+        print("USED MEM free OKA\n");
+    }
 
     shell_main();
 }

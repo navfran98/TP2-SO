@@ -12,6 +12,7 @@
 #include <moduleLoader.h>
 
 #include <idtLoader.h>     // ya que necesita a load_idt
+#include <buddy_allocator.h>
 
 #include <screen_driver.h>   // creo que es solo para probar cosas, despues seguro se puede sacar
 #include <video_driver.h>   // para incluir la funcion init_video_driver
@@ -29,7 +30,7 @@ static const uint64_t PageSize = 0x1000;
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
 static void * base_mem = (void *) 0x700000;  
-static uint64_t total_mem = 1024 * 1024 * 100;
+static uint64_t total_mem = 1024 * 1024 * 1;
 
 typedef int (*EntryPoint)();
 
@@ -86,8 +87,9 @@ void * initializeKernelBinary() {
 	// ncPrintHex((uint64_t)&bss);
 	// ncNewline();
 
-	free_list_init(base_mem, total_mem);
-
+	//free_list_init(base_mem, total_mem); ///////////////////////////////////////////
+	generate_buddy_tree(base_mem, total_mem);
+	drawString("HOLAOLA\n");
 	// ncPrint("[Done]");
 	// ncNewline();
 	// ncNewline();
