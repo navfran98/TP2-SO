@@ -5,6 +5,7 @@ GLOBAL segundos
 GLOBAL minutos
 GLOBAL horas
 GLOBAL obtenerCantidad
+GLOBAL call_scheduler
 
 section .bss
     numstr resb 10  ; used by num_to_string function
@@ -109,6 +110,10 @@ cpuVendor:
 
 	mov rsp, rbp
 	pop rbp
+	ret
+
+call_scheduler():
+	int 20h
 	ret
 
 ; --------------------------------

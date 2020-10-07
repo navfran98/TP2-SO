@@ -15,7 +15,14 @@
 #define BUDDY_MALLOC 8
 #define BUDDY_FREE 9
 #define CHECK_MEM_STATE_BUDDY 10
+#define GET_PID 11
+#define KILL_PROCESS 12
+#define CREATE_PROCESS 13
+#define PS 14
+#define SET_PRIORITY_PROCESS 15
+#define SET_STATE_PROCESS 16
 
+//CAMBIAR NOMBRES DE LOS PARAMETROS POR NOMBRES GENERALES PARA NO CONFUNDIR
 extern int segundos();
 extern int minutos();
 extern int horas();
@@ -43,12 +50,44 @@ void syscall_dispatcher(int ID, int file_descriptor, char * string, uint64_t siz
             return (void *) free_list_malloc(size); 
             break;
         }
+
         case BUDDY_FREE:{ 
             buddy_free((void*) ptr); 
             break;
         }
+        
         case BUDDY_MALLOC:{ 
             return (void *) buddy_malloc(size); 
+            break;
+        }
+
+        case GET_PID:{
+            return get_pid();
+            break;
+        }
+
+        case KILL_PROCESS:{
+            return kill_process(size);
+            break;
+        }
+
+        case CREATE_PROCESS:{
+
+            break;
+        }
+
+        case PS:{
+            printAll();
+            break;
+        }
+
+        case SET_STATE_PROCESS:{
+            return change_state(size);
+            break;
+        }
+
+        case SET_PRIORITY_PROCESS:{
+            return set_priority(size, ptr);
             break;
         }
 

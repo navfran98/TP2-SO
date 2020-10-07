@@ -12,5 +12,6 @@ char *cpuVendor(char *result);
 int strlen(char* string);
 char* num_to_string(int numero);
 int getNumberLength(int number);
+void call_scheduler();
 
 #endif

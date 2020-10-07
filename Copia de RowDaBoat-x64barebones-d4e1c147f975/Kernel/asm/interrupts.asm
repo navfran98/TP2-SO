@@ -13,12 +13,14 @@ GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
 GLOBAL _systemCallsHandler
+GLOBAL _schedulerHandler
 
 GLOBAL _exception0Handler
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN syscall_dispatcher
+EXTERN scheduler
 
 SECTION .text
 
@@ -119,6 +121,19 @@ SECTION .text
 %endmacro
 
 
+%macro schedulerHandler
+	pushState
+
+	mov rdi, rsp ;scheduler recibe como parametro el sp
+	call scheduler
+	mov rsp, rax ;devuelve sp
+
+	popState
+
+	iretq
+%endmacro
+
+
 _hlt:
 	sti
 	hlt
@@ -163,7 +178,8 @@ _systemCallsHandler:
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	irqHandlerMaster 0
+	; irqHandlerMaster 0
+	schedulerHandler 0
 
 ;Keyboard
 _irq01Handler:
@@ -194,8 +210,6 @@ haltcpu:
 	cli
 	hlt
 	ret
-
-
 
 SECTION .bss
 	aux resq 1
