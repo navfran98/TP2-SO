@@ -4,6 +4,7 @@
 #include <free_list_allocator.h>
 #include <buddy_allocator.h>
 #include <stdint.h>
+#include <kernel.h>
 
 #define STD_INTPUT 0
 #define STD_OUTPUT 1
@@ -21,43 +22,44 @@
 #define PS 14
 #define SET_PRIORITY_PROCESS 15
 #define SET_STATE_PROCESS 16
+#define FORCE_NEW_SELECTION 17
 
 //CAMBIAR NOMBRES DE LOS PARAMETROS POR NOMBRES GENERALES PARA NO CONFUNDIR
 extern int segundos();
 extern int minutos();
 extern int horas();
 //cambiar todos los tipos por uint64_t
-                        //rdi         rsi                rdx            rcx          r8
-void syscall_dispatcher(int ID, int file_descriptor, char * string, uint64_t size, uint64_t ptr) { 
+            //rdi         rsi                rdx            rcx          r8    r9
+void syscall_dispatcher(int ID, int arg2, char * arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) { 
     switch(ID){
         //estas 3 dsp van a llamar a la funcion free, malloc y state: y luego se corre la de freelist o la de buddy segun sea el caso
         case FREE_SYS:{ 
-            free_list_free((void *) ptr);
+            free_list_free((void *) arg5);
             break;
         }
 
         case CHECK_MEM_STATE:{
-            free_list_check_mem_state((uint64_t *) ptr);
+            free_list_check_mem_state((uint64_t *) arg5);
             break;
         }
         
         case CHECK_MEM_STATE_BUDDY:{
-            buddy_check_mem_state((uint64_t *) ptr);
+            buddy_check_mem_state((uint64_t *) arg5);
             break;
         }
 
         case MALLOC_SYS:{ 
-            return (void *) free_list_malloc(size); 
+            return (void *) free_list_malloc(arg4); 
             break;
         }
 
         case BUDDY_FREE:{ 
-            buddy_free((void*) ptr); 
+            buddy_free((void*) arg5); 
             break;
         }
         
         case BUDDY_MALLOC:{ 
-            return (void *) buddy_malloc(size); 
+            return (void *) buddy_malloc(arg4); 
             break;
         }
 
@@ -67,12 +69,17 @@ void syscall_dispatcher(int ID, int file_descriptor, char * string, uint64_t siz
         }
 
         case KILL_PROCESS:{
-            return kill_process(size);
+            return kill_process(arg4);
             break;
         }
 
         case CREATE_PROCESS:{
-
+            /*name, priority, contexto*/
+            // if(name == "SHELL"){
+            //     void * rip = shellModuleAddress;
+            // }
+            //                 //name , , prio, cont
+            // create_process(arg2, rip, arg4 , arg5)
             break;
         }
 
@@ -82,20 +89,24 @@ void syscall_dispatcher(int ID, int file_descriptor, char * string, uint64_t siz
         }
 
         case SET_STATE_PROCESS:{
-            return change_state(size);
+            return change_state(arg4);
             break;
         }
 
         case SET_PRIORITY_PROCESS:{
-            return set_priority(size, ptr);
+            return set_priority(arg4, arg5);
             break;
         }
 
+        case FORCE_NEW_SELECTION: {
+            force_new_selection();
+            break;
+        }
 
         case 4:{   // WRITE syscall
-            switch(file_descriptor){
+            switch(arg2){
                 case STD_OUTPUT:{
-                    drawString(string);
+                    drawString(arg3);
                     break;
                 }
             }
@@ -103,18 +114,18 @@ void syscall_dispatcher(int ID, int file_descriptor, char * string, uint64_t siz
         }
         
         case 3:{   // READ syscall
-            switch(file_descriptor){
+            switch(arg2){
                 case STD_INTPUT:{  // read from the keyboard buffer
-                    string[0] = get_keyboard_buffer();
+                    arg3[0] = get_keyboard_buffer();
                     break;
                 }
                 case RTC:{
                     int seg = segundos();
 					int min = minutos();
 					int hora = horas();
-					string[0]=hora/10 + 0x30; string[1]=hora%10 + 0x30;
-					string[3]=min/10 + 0x30; string[4]=min%10 + 0x30;
-					string[6]=seg/10 + 0x30; string[7]=seg%10 + 0x30;
+					arg3[0]=hora/10 + 0x30; arg3[1]=hora%10 + 0x30;
+					arg3[3]=min/10 + 0x30; arg3[4]=min%10 + 0x30;
+					arg3[6]=seg/10 + 0x30; arg3[7]=seg%10 + 0x30;
 					break;
                 }
             }

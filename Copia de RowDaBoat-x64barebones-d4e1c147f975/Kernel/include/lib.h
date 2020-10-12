@@ -13,5 +13,6 @@ int strlen(char* string);
 char* num_to_string(int numero);
 int getNumberLength(int number);
 void call_scheduler();
+uint64_t init_stack(void * ptr, uint64_t rip);
 
 #endif

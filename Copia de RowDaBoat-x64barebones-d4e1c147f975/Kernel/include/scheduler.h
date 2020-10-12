@@ -1,7 +1,5 @@
 #include <process.h>
-
-enum state {BLOCKED,READY,EXECUTING};
-enum process_type {FORE, BACK};
+#include <stdint.h>
 
 typedef struct scheduler_list{
     pcb * first;
@@ -9,13 +7,21 @@ typedef struct scheduler_list{
     //podemos agregar las cosas que necesitamos a esto.
 } schlist; 
 
-
 static pcb * first;
 
-// typedef struct list_node{
-//     process process;
-//     struct list_node * next;
-// } node;
+pcb * get_next(); 
+
+void idle();
+
+void init_scheduler();
+
+void force_new_selection();
+
+state get_pcb_state(uint64_t pid);
+
+uint64_t change_state(uint64_t pid);
+
+void set_state(uint64_t pid, state state);
 
 uint64_t set_priority(uint64_t pid, uint64_t new_priority);
 
@@ -29,7 +35,6 @@ void print_all();
 
 void toggle_block(uint64_t pid);
 
-//para usar dentro de las demas funciones
 pcb * get_pcb(uint64_t pid);
 
 void add_process(pcb * process);

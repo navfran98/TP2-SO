@@ -3,6 +3,8 @@
 #include <scheduler.h>
 #include <buddy_allocator.h>
 #include <time.h> 
+#include <interrupts.h>
+
 #define NULL (void *) 0
 #define LOWEST_PRIO 10
 #define HIGHEST_PRIO 1
@@ -10,62 +12,75 @@
 #define QUANTUM 100
 
 static pcb * current; 
-static schlist * pqueue;
 static pcb * idle_process;
-
-
-void context_change(pcb * to_exe){
-    current->state = READY;
-    add_process(current);
-    current = to_exe;
-    to_exe->state = EXECUTING;
-    //RIP = currently_executing->RIP para que se ejecute el nuevo proceso
-}
+static schlist * pqueue;
+int ticks = 0;
 
 uint64_t scheduler(uint64_t stack_pointer){
-    pcb * aux, * aux_prev;
     timer_handler();
-
-
-    if(current->state == EXECUTING){
-        current->state = READY;
+    ticks++;
+    if(ticks >= current->priority || current == idle_process){
+        if(current->state == EXECUTING){
+            current->state = READY;
+        }
+        current = get_next();
+        current->state = EXECUTING;
+        ticks = 0;
+        return current->sp;
     }
-
-    aux = current
-    while(current->state != READY && aux->pid != current->pid){
-        current == current->next;
-    }
-
-
-    current = NULL;
-    return idle_process->sp;
-
-    current->state = EXECUTING;
-    return current->sp;
 
     //3 casos:
     // corremos el primer ready q encontramos
     // corremos el anterior si se estaba ejecutando antes y no encontramos uno nuevo para ejecutar
     // corremos el idle si no hay NINGUN proceso en ready en la cola
-
-    
-
-   
-    //sleep(QUANTUM/priority); check priority
 }
- 
-// pcb * fetch_next_process(){
-//     pcb * aux;
-//     for(aux = pqueue->first; aux != NULL && aux->state == BLOCKED ; aux = aux->next);
-//     return aux;
-// }
+
+pcb * get_next(){
+    if(pqueue->first->next == NULL){
+        return idle_process; 
+    }
+    pcb * aux = current->next;
+    if(aux == NULL){
+        aux = pqueue->first->next;
+    }
+
+    while(aux->state != READY && aux->pid != current->pid){
+        aux = aux->next;
+        if(aux == NULL){
+            if(pqueue->first == current){
+                aux = pqueue->first;
+            }
+            else{
+                aux = pqueue->first->next;
+            }
+        }
+    }
+    if(aux->pid == current->pid){ //dimos toda la vuelta
+        if(aux->state != READY){
+            return idle_process; //no encontre ninguno excepto el que corri antes, asique lo mando otra vez
+        }
+    }
+    return aux;
+}
+
+void idle(){
+    while (1){
+        _hlt();
+    }
+}
 
 void init_scheduler(){
     //generate idle ... 
+    idle_process = generate_process("IDLE", &idle, LOWEST_PRIO, BACK);
     current = idle_process;
     pqueue = buddy_malloc(sizeof(pqueue));
-    pqueue->first = NULL;
+    pqueue->first = idle_process;
     pqueue->last = pqueue->first;
+}
+
+void force_new_selection(){
+    ticks = current->priority + 1;
+    call_scheduler();
 }
 
 state get_pcb_state(uint64_t pid){
@@ -197,6 +212,7 @@ pcb * get_pcb(uint64_t pid){
 void add_process(pcb * process){
     pqueue->last->next = process;
     pqueue->last = pqueue->last->next;
+    
 }
 
 void print_all(){

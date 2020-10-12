@@ -14,6 +14,11 @@ section .bss
 
 section .text
 
+;DSP HACERLO SOLO CON ESTA
+; syscall:
+;     int 80h
+;     ret
+
 
 
 syscall_buddy_check_mem_state:
@@ -235,7 +240,6 @@ syscall_read:
     mov rsp, rbp
     pop rbp
     ret
-
 
 
 ; --------------------------------

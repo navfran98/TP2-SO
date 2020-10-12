@@ -3,9 +3,6 @@
 
 #define STD_INPUT 0
 
-extern void syscall_write(char* toWrite, int length);
-extern void syscall_read(int file_descriptor, char* toRead,int length);
-
 void print(char* string) {
   syscall_write(string, strlen(string));
 }

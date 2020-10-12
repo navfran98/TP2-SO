@@ -1,7 +1,7 @@
 #include <stdint.h>
 
-typedef enum state {BLOCKED,READY,EXECUTING,NOT_FOUND} state;
-typedef enum process_type {FORE, BACK} process_type;
+typedef enum {BLOCKED,READY,EXECUTING,NOT_FOUND} state;
+typedef enum {FORE, BACK} process_type;
 
 typedef struct process_data{
     char * name;
@@ -12,14 +12,13 @@ typedef struct process_data{
     uint64_t bp;
     void * stack;
 
-    enum state state;
-    enum process_type type;
+    state state;
+    process_type type;
 
-    pcb * next;
+    struct process_data * next;
 
-} pcb; 
+}pcb; 
 
 
-pcb * generate_process(char * name, uint64_t priority, 
-uint64_t pid, uint64_t ppid, uint64_t stack_pointer, 
-uint64_t base_pointer, enum state state, process_type type);
+pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type type);
+uint64_t create_process(char * name, void * rip, uint64_t priority,  process_type type);
