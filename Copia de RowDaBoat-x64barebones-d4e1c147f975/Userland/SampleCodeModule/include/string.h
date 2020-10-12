@@ -1,6 +1,8 @@
 #ifndef STRING_H
 #define STRING_H
 
+#include <syscalls.h>
+
 int strcmp (const char *p1, const char *p2);
 
 int strlen(char* string);

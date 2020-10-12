@@ -113,7 +113,7 @@ cpuVendor:
 	pop rbp
 	ret
 
-call_scheduler():
+call_scheduler:
 	int 20h
 	ret
 

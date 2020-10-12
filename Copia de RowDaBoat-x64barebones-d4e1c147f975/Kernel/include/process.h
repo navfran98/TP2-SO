@@ -1,7 +1,7 @@
 #include <stdint.h>
 
-typedef enum {BLOCKED,READY,EXECUTING,NOT_FOUND} state;
-typedef enum {FORE, BACK} process_type;
+typedef enum {BLOCKED=0,READY,EXECUTING,NOT_FOUND} state;
+typedef enum {FORE=0, BACK} process_type;
 
 typedef struct process_data{
     char * name;

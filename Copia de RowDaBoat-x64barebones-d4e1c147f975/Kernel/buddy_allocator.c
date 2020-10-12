@@ -48,7 +48,7 @@ void printState(block* n);
 
 void generate_buddy_tree(void * base_mem, uint64_t total_mem){
    
-   drawNumber(sizeof(block), 124124214, 32);
+   // drawNumber(sizeof(block), 124124214, 32);
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
    
    buddy_tree->base_mem = (uint64_t*)base_mem;
@@ -115,9 +115,9 @@ uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64
 
 uint8_t get_level(uint64_t size){
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
-   drawNumber(size,412412,4);
-   drawString("<-size  free mem->");
-   drawNumber(buddy_tree->free_mem,3123123,33);
+   // drawNumber(size,412412,4);
+   // drawString("<-size  free mem->");
+   // drawNumber(buddy_tree->free_mem,3123123,33);
 
    if(size > buddy_tree->free_mem)
       return -1;

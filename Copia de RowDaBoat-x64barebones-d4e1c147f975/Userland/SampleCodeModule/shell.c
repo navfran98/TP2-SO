@@ -2,7 +2,7 @@
 #include "shellCommands.h"
 #include "string.h"
 #include <stdint.h>
-#include "alloc.h"
+#include "syscalls.h"
 
 #define SHELL_BUFFER_SIZE (128)+(128/2)  // 1 linea y media
 

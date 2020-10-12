@@ -5,6 +5,7 @@
 #include <buddy_allocator.h>
 #include <stdint.h>
 #include <kernel.h>
+#include <scheduler.h>
 
 #define STD_INTPUT 0
 #define STD_OUTPUT 1
@@ -84,7 +85,7 @@ void syscall_dispatcher(int ID, int arg2, char * arg3, uint64_t arg4, uint64_t a
         }
 
         case PS:{
-            printAll();
+            print_all();
             break;
         }
 

@@ -121,7 +121,7 @@ SECTION .text
 %endmacro
 
 
-%macro schedulerHandler
+%macro schedulerHandler 1
 	pushState
 
 	mov rdi, rsp ;scheduler recibe como parametro el sp

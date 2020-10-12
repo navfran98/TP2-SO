@@ -1,4 +1,5 @@
 #include <process.h>
+#include <stack.h>
 #include <stdint.h>
 
 typedef struct scheduler_list{

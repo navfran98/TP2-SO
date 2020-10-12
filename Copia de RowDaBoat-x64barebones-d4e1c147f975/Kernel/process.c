@@ -1,7 +1,5 @@
 #include <stdint.h>
 #include <process.h>
-#include <scheduler.h>
-#include <stack.h> 
 #include <lib.h>
 
 #define NULL (void*) 0

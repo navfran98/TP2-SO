@@ -71,9 +71,9 @@ void * initializeKernelBinary() {
 
 int main() {
 	//crear la shell
-	create_process("SHELL", sampleCodeModuleAddress, 5, FORE);
-	// while(1){             
-	// 	((EntryPoint)sampleCodeModuleAddress)();
-	// }
+	// create_process("SHELL", sampleCodeModuleAddress, 5, FORE);
+	while(1){             
+		((EntryPoint)sampleCodeModuleAddress)();
+	}
 	return 0;
 }

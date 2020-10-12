@@ -1,6 +1,5 @@
 #include <stack.h>
-#include <scheduler.h>
-#include <process.h>
+
 
 stackStruct initialize_stack(void * rip, void * base) {
     stackStruct stack;
@@ -26,7 +25,7 @@ stackStruct initialize_stack(void * rip, void * base) {
     stack.eflags = 0x202;
 	stack.rip = (uint64_t) rip;
     stack.rsp = (uint64_t) base;
-    stack.returnAddress = (uint64_t)&kill_process;
+    // stack.returnAddress = ;
 
     return stack;
 }
