@@ -178,8 +178,20 @@ _systemCallsHandler:
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	; irqHandlerMaster 0
-	schedulerHandler 0
+	;irqHandlerMaster 0
+	; schedulerHandler 0
+	pushState;;,
+
+	mov rdi, rsp ;scheduler recibe como parametro el sp ytho
+	call scheduler
+	mov rsp, rax ;devuelve sp
+
+	mov al, 20h
+	out 20h, al
+
+	popState
+
+	iretq
 
 ;Keyboard
 _irq01Handler:

@@ -193,10 +193,6 @@ syscall_write:
     push rbx
     push rcx
     push rdx
-    mov rax, 0
-    mov rbx, 0
-    mov rcx, 0
-    mov rdx, 0
 
     mov rax, 4
     mov rbx, 1
@@ -221,10 +217,6 @@ syscall_read:
     push rbx
     push rcx
     push rdx
-    mov rax, 0
-    mov rbx, 0
-    mov rcx, 0
-    mov rdx, 0
 
     mov rax, 3
     mov rbx, rdi  ; le paso el file_descriptor

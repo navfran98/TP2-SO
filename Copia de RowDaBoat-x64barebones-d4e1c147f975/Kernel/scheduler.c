@@ -4,54 +4,87 @@
 #include <buddy_allocator.h>
 #include <time.h> 
 #include <interrupts.h>
+#include <screen_driver.h>
 
 #define NULL (void *) 0
-#define LOWEST_PRIO 10
-#define HIGHEST_PRIO 1
+#define LOWEST_PRIO 1
+#define HIGHEST_PRIO 10
 
 #define QUANTUM 100
 
 static pcb * current; 
 static pcb * idle_process;
-static schlist * pqueue;
-int ticks = 0;
+static pcb * first, *last;
+int counter = 0;
+void printListt();
 
 uint64_t scheduler(uint64_t stack_pointer){
     timer_handler();
-    ticks++;
-    if(ticks >= current->priority || current == idle_process){
+    // drawString(num_to_string(stack_pointer));
+    // drawString("\n");
+    // //drawString("F");
+    // drawString(num_to_string(current->sp));
+    // drawString("\n");
+    
+    // return current->sp;
+
+    if(first == NULL){
+        init_scheduler();
+    }
+    // drawString(num_to_string(current->bp));
+    // drawString("\n");
+    // drawString(num_to_string(current->sp));
+    // drawString("\n");
+    current->sp = stack_pointer;
+    // drawString(num_to_string(current->sp));
+    // drawString("\n");
+    counter++;
+    if(counter >= current->priority || current == idle_process){
         if(current->state == EXECUTING){
             current->state = READY;
         }
-        current = get_next();
+        pcb * aux = get_next();
+        current = aux;
         current->state = EXECUTING;
-        ticks = 0;
+        counter = 0;
+        drawString("Running: ");
+        drawString(current->name);
+        drawString("\n");
         return current->sp;
     }
+    return current->sp;
+}
 
-    //3 casos:
-    // corremos el primer ready q encontramos
-    // corremos el anterior si se estaba ejecutando antes y no encontramos uno nuevo para ejecutar
-    // corremos el idle si no hay NINGUN proceso en ready en la cola
+void printListt(){
+    pcb * aux = first;
+    drawString(idle_process->name);
+    while(aux != NULL){
+        drawString("Process: ");
+        drawString(aux->name);
+        drawString("\n");
+        aux = aux->next;
+    }
 }
 
 pcb * get_next(){
-    if(pqueue->first->next == NULL){
+    if(first->next == NULL){
         return idle_process; 
     }
+
+    //printListt();
     pcb * aux = current->next;
     if(aux == NULL){
-        aux = pqueue->first->next;
+        aux = first->next;
     }
-
+    // IDLE -> SHELL -> NULL
     while(aux->state != READY && aux->pid != current->pid){
         aux = aux->next;
         if(aux == NULL){
-            if(pqueue->first == current){
-                aux = pqueue->first;
+            if(first == current){
+                aux = first;
             }
             else{
-                aux = pqueue->first->next;
+                aux = first->next;
             }
         }
     }
@@ -72,14 +105,14 @@ void idle(){
 void init_scheduler(){
     //generate idle ... 
     idle_process = generate_process("IDLE", &idle, LOWEST_PRIO, BACK);
+    drawString("Generating scheduler...\n");
     current = idle_process;
-    pqueue = buddy_malloc(sizeof(pqueue));
-    pqueue->first = idle_process;
-    pqueue->last = pqueue->first;
+    first = idle_process;
+    last = first;
 }
 
 void force_new_selection(){
-    ticks = current->priority + 1;
+    counter = current->priority + 1;
     call_scheduler();
 }
 
@@ -142,13 +175,13 @@ uint64_t get_ppid(){
 uint64_t kill_process(uint64_t pid){
 
     if(current->pid == pid){
-        buddy_free(current);
+        free_list_free(current);
         current = NULL;
         call_scheduler();
         return 1;
     }
 
-    pcb * aux = pqueue->first;
+    pcb * aux = first;
     pcb * aux_prev = aux;
 
     while(aux != NULL && aux->pid != pid){
@@ -158,12 +191,12 @@ uint64_t kill_process(uint64_t pid){
     if(aux == NULL){
         return 0; //no lo encontré. 
     }
-    if(aux == pqueue->first){
-        pqueue->first = pqueue->first->next;
+    if(aux == first){
+        first = first->next;
         
     }
-    else if(aux == pqueue->last){
-        pqueue->last = aux_prev;
+    else if(aux == last){
+        last = aux_prev;
         aux_prev->next = NULL;
     }
     else{
@@ -196,8 +229,8 @@ void toggle_block(uint64_t pid){
 }
 
 pcb * get_pcb(uint64_t pid){
-    if(pqueue != NULL){
-        pcb * aux = pqueue->first; 
+    if(first != NULL){
+        pcb * aux = first; 
         
         while(aux->next != NULL && aux->pid != pid){
             aux = aux->next;
@@ -210,9 +243,8 @@ pcb * get_pcb(uint64_t pid){
 }
 
 void add_process(pcb * process){
-    pqueue->last->next = process;
-    pqueue->last = pqueue->last->next;
-    
+    last->next = process;
+    last = last->next;
 }
 
 void print_all(){
@@ -220,7 +252,7 @@ void print_all(){
         drawString("There is no process in the scheduler at the moment\n");
         return;
     }
-    pcb * pcb_aux = pqueue->first;
+    pcb * pcb_aux = first;
     drawString("Name    Pid    PPid    Priority    State    BP    SP    Type");
     for(;pcb_aux != NULL; pcb_aux = pcb_aux->next){
         drawString(pcb_aux->name);

@@ -8,7 +8,7 @@ static void * const sampleDataModuleAddress = (void*) 0x500000;
 
 //memory
 static void * base_mem = (void *) 0x800000;  
-static uint64_t total_mem = 1024 * 1024 * 50;
+static uint64_t total_mem = 1024 * 1024 * 10;
 
 //functions
 void * getStackBase();

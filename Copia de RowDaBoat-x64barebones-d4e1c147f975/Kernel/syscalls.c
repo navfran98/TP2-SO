@@ -30,79 +30,79 @@ extern int segundos();
 extern int minutos();
 extern int horas();
 //cambiar todos los tipos por uint64_t
-            //rdi         rsi                rdx            rcx          r8    r9
-void syscall_dispatcher(int ID, int arg2, char * arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) { 
+            //rdi         rsi                rdx            rcx          r8         r9
+void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4 /*, uint64_t arg5, uint64_t arg6*/) { 
     switch(ID){
         //estas 3 dsp van a llamar a la funcion free, malloc y state: y luego se corre la de freelist o la de buddy segun sea el caso
-        case FREE_SYS:{ 
-            free_list_free((void *) arg5);
-            break;
-        }
+        // case FREE_SYS:{ 
+        //     free_list_free((void *) arg5);
+        //     break;
+        // }
 
-        case CHECK_MEM_STATE:{
-            free_list_check_mem_state((uint64_t *) arg5);
-            break;
-        }
+        // case CHECK_MEM_STATE:{
+        //     free_list_check_mem_state((uint64_t *) arg5);
+        //     break;
+        // }
         
-        case CHECK_MEM_STATE_BUDDY:{
-            buddy_check_mem_state((uint64_t *) arg5);
-            break;
-        }
+        // case CHECK_MEM_STATE_BUDDY:{
+        //     buddy_check_mem_state((uint64_t *) arg5);
+        //     break;
+        // }
 
-        case MALLOC_SYS:{ 
-            return (void *) free_list_malloc(arg4); 
-            break;
-        }
+        // case MALLOC_SYS:{ 
+        //     return (void *) free_list_malloc(arg4); 
+        //     break;
+        // }
 
-        case BUDDY_FREE:{ 
-            buddy_free((void*) arg5); 
-            break;
-        }
+        // case BUDDY_FREE:{ 
+        //     buddy_free((void*) arg5); 
+        //     break;
+        // }
         
-        case BUDDY_MALLOC:{ 
-            return (void *) buddy_malloc(arg4); 
-            break;
-        }
+        // case BUDDY_MALLOC:{ 
+        //     return (void *) buddy_malloc(arg4); 
+        //     break;
+        // }
 
-        case GET_PID:{
-            return get_pid();
-            break;
-        }
+        // case GET_PID:{
+        //     return get_pid();
+        //     break;
+        // }
 
-        case KILL_PROCESS:{
-            return kill_process(arg4);
-            break;
-        }
+        // case KILL_PROCESS:{
+        //     return kill_process(arg4);
+        //     break;
+        // }
 
-        case CREATE_PROCESS:{
-            /*name, priority, contexto*/
-            // if(name == "SHELL"){
-            //     void * rip = shellModuleAddress;
-            // }
-            //                 //name , , prio, cont
-            // create_process(arg2, rip, arg4 , arg5)
-            break;
-        }
+        // case CREATE_PROCESS:{
+        //     /*name, priority, contexto*/
+        //     // if(name == "SHELL"){
+        //     //     void * rip = shellModuleAddress;
+        //     // }
+        //     //                 //name , , prio, cont
+        //     // create_process(arg2, rip, arg4 , arg5)
+        //     break;
+        // }
 
-        case PS:{
-            print_all();
-            break;
-        }
+        // case PS:{
+        //     print_all();
+        //     break;
+        // }
 
-        case SET_STATE_PROCESS:{
-            return change_state(arg4);
-            break;
-        }
+        // case SET_STATE_PROCESS:{
+        //     return change_state(arg4);
+        //     break;
+        // }
 
-        case SET_PRIORITY_PROCESS:{
-            return set_priority(arg4, arg5);
-            break;
-        }
+        // case SET_PRIORITY_PROCESS:{
+        //     return set_priority(arg4, arg5);
+        //     break;
+        // }
 
-        case FORCE_NEW_SELECTION: {
-            force_new_selection();
-            break;
-        }
+        // case FORCE_NEW_SELECTION: {
+        //     force_new_selection();
+        //     break;
+        // }
 
         case 4:{   // WRITE syscall
             switch(arg2){

@@ -4,7 +4,7 @@
 #include <lib.h>
 
 #define NULL (void *) 0
-#define MAX_LEVELS 13 
+#define MAX_LEVELS 10
 #define BLOCKS_PER_LEVEL(lvl) (1<<(lvl))
 #define SIZE_OF_BLOCKS_AT_LEVEL(lvl,total_size) ((total_size) / (1<<(lvl)))
 #define INDEX_OF_POINTER_IN_LEVEL(pointer,lvl,memory_start,total_size) \

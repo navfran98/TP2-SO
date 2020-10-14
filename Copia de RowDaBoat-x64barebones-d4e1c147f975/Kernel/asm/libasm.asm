@@ -181,28 +181,30 @@ init_stack:
     push 0x202  ; push RFLAGS=0x202
     push 0x8    ; push CS=0x8
 
-    push rsi    ; push address of the function brought from create_first_process
+    push rsi    ; push address of the function brought from create_first_process (EL RIP)  
 
     ; we push all the values that the registers will have at the start of the new process
 
-    push 0x0      ; this value will be recovered by RAX once the new process starts
-    push 0x0      ; this value will be recovered by RBX once the new process starts
-    push 0x0      ; this value will be recovered by RCX once the new process starts
-    push 0x0      ; this value will be recovered by RDX once the new process starts
-    push 0x0      ; this value will be recovered by RBP once the new process starts
+    push rax      ; this value will be recovered by RAX once the new process starts
+    push rbx      ; this value will be recovered by RBX once the new process starts
+    push rcx      ; this value will be recovered by RCX once the new process starts
+    push rdx      ; this value will be recovered by RDX once the new process starts
+    push rbp      ; this value will be recovered by RBP once the new process starts
 	
-	push 0x0	  ; this value will be recovered by RDI once the new process starts
+    push rdi
+    push rsi
+	;push 0x0	  ; this value will be recovered by RDI once the new process starts
     ;mov rbx, rcx  ;the second argument EVERY process is gonna start with: where_to_write / where_to_read
-    push 0x0      ; this value will be recovered by RSI once the new process starts
+    ;push 0x0      ; this value will be recovered by RSI once the new process starts
     
-    push 0x0      ; this value will be recovered by R8 once the new process starts
-    push 0x0      ; this value will be recovered by R9 once the new process starts
-    push 0x0      ; this value will be recovered by R10 once the new process starts
-    push 0x0      ; this value will be recovered by R11 once the new process starts
-    push 0x0      ; this value will be recovered by R12 once the new process starts
-    push 0x0      ; this value will be recovered by R13 once the new process starts
-    push 0x0      ; this value will be recovered by R14 once the new process starts
-    push 0x0      ; this value will be recovered by R15 once the new process starts
+    push r8      ; this value will be recovered by R8 once the new process starts
+    push r9      ; this value will be recovered by R9 once the new process starts
+    push r10      ; this value will be recovered by R10 once the new process starts
+    push r11      ; this value will be recovered by R11 once the new process starts
+    push r12      ; this value will be recovered by R12 once the new process starts
+    push r13      ; this value will be recovered by R13 once the new process starts
+    push r14      ; this value will be recovered by R14 once the new process starts
+    push r15      ; this value will be recovered by R15 once the new process starts
 
 
     mov rax, rsp ; this function returns the new RSP address with everything pushed

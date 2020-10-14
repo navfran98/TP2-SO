@@ -14,53 +14,10 @@ static uint8_t k = 0; // to move across the buffer
 
 
 void start_shell() {
+
     print(">>");
-
-    print(" Prueba de malloc antes de ejecutar la shell\n...  ");
-
-    print("METO 4\n");
-    char * prueba = (char *) syscall_buddy_malloc(512);
-    print("\n-----------------\n\n");
-
-
-    print("METO 8 \n");
-    char * prueba2 = (char *) syscall_buddy_malloc(8);
-    print("\n-----------------\n\n");
-
-
-     uint64_t * vec = 0;
-     syscall_buddy_check_mem_state(vec);
-    if(vec[0] == 1024 *  1){
-        print("TOTAL MEM malloc OKA\n");
-    }
-    if(vec[1] < 1024 * 1){
-        print("FREE MEM malloc OKA\n");
-    }
-    if(vec[2] != 0){
-        print("USED MEM malloc OKA\n");
-    }
-
-    print("-----------------\n\n");
-    
-    syscall_buddy_free(prueba2);
-    syscall_buddy_free(prueba);
-
-    
-    syscall_buddy_check_mem_state(vec);
-    if(vec[0] == 1024 * 1){
-        print("TOTAL MEM  free OKA\n");
-    }
-    else{
-        print("???");
-    }
-    if(vec[1] == 1024 * 1){
-        print("FREE MEM free OKA\n");
-    }
-    if(vec[2] == 0){
-        print("USED MEM free OKA\n");
-    }
-
     shell_main();
+
 }
 
 
@@ -70,6 +27,7 @@ static void shell_main() {
     while(1) {
         c = getChar();
         if(c != -1) {
+            print("h");
             if(c == '\n') {
                 putchar(c);     // print the '\n' to move to the next line
                 shell_buffer[k++] = '\0';
@@ -134,7 +92,5 @@ static int search_command(char command_with_possible_parameter[], char* paramete
         }
         parameter[j2++] = '\0';
     }
-
     return number_of_command;
-
 }

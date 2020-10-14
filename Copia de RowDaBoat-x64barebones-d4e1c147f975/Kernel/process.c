@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <process.h>
 #include <lib.h>
+#include <buddy_allocator.h>
 
 #define NULL (void*) 0
 #define SIZE_OF_STACK 1000 //FIJARSE DESPUES
@@ -10,12 +11,12 @@ uint64_t process_count = 0;
 pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type type){
 
     void * stack_ptr = buddy_malloc(SIZE_OF_STACK);
+    
     char * start_address = (char * ) stack_ptr + SIZE_OF_STACK; //direccion mas baja del stack
     
-
     pcb * to_ret = buddy_malloc(sizeof(pcb));
     to_ret->name = name;
-    to_ret->bp = init_stack(stack_ptr, rip);
+    to_ret->bp = init_stack(start_address, rip);
     to_ret->sp = to_ret->bp;
     to_ret->stack = stack_ptr;
     to_ret->state = READY;
@@ -26,6 +27,7 @@ pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type
     to_ret->next = NULL;
 
     process_count++;
+
     return to_ret;
 }
 

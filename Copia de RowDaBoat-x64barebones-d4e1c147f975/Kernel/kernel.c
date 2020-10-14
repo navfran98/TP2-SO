@@ -19,6 +19,7 @@
 #include <time.h>   // seguro despues lo puedo sacar
 #include <kernel.h>
 #include <process.h>
+#include <interrupts.h>
 
 
 extern uint8_t text;
@@ -58,22 +59,49 @@ void * initializeKernelBinary() {
 
 	clearBSS(&bss, &endOfKernel - &bss);
 
-
-	//free_list_init(base_mem, total_mem); 
 	generate_buddy_tree(base_mem, total_mem);
-	init_scheduler();
+	//free_list_init(base_mem, total_mem); 
 	init_VM_Driver();
-
-	load_idt();
-
+	init_scheduler();
+	
 	return getStackBase();
+}
+void joaco(){
+	while(1){
+		_hlt();
+	}
 }
 
 int main() {
 	//crear la shell
-	// create_process("SHELL", sampleCodeModuleAddress, 5, FORE);
-	while(1){             
-		((EntryPoint)sampleCodeModuleAddress)();
-	}
+
+	create_process("SHELL", sampleCodeModuleAddress, 5, FORE);
+	create_process("JOACO", &joaco, 2, FORE);
+	load_idt();
+
+	_hlt();
+	drawString("If this is shown, then something is wrong! \n");
+	// while(1){             
+	// 	((EntryPoint)sampleCodeModuleAddress)();
+	// }
+	
 	return 0;
 }
+
+
+	// uint8_t first_process = create_process((uint64_t)sampleCodeModuleAddress, 1, 0 , 0);
+	// if(first_process == 1) {
+	// 	drawString("SHELL WAS NOT CREATED --> ABORT");
+	// 	haltcpu();
+	// }
+
+	// // Arqui function provided by the proffesors. Loads the IDT and fill it with int0, int20, int21 and int80
+	// load_idt();
+
+	// // halt the cpu until the TT interruption arrives, which will choose the Shell as the running process
+	// _hlt();
+	
+	// drawString("If this is shown, then something is wrong! \n");
+	// return 0;
+
+
