@@ -7,6 +7,14 @@ GLOBAL syscall_check_mem_state
 GLOBAL syscall_buddy_malloc
 GLOBAL syscall_buddy_free
 GLOBAL syscall_buddy_check_mem_state
+GLOBAL syscall_create_process
+GLOBAL syscall_halt
+GLOBAL syscall_ps
+GLOBAL syscall_get_pid
+GLOBAL syscall_kill
+GLOBAL syscall_force_new_selection
+GLOBAL syscall_change_state
+GLOBAL syscall_set_priority
 
 section .bss
     numstr resb 10  ; used by num_to_string function 
@@ -200,6 +208,182 @@ syscall_write:
     mov rdx, rsi ; le paso la longitud del string
     mov r8, 1
 
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_create_process:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 13
+    mov rbx, rdi
+    mov r9, rcx
+    mov rcx, 1
+    mov r8, rdx
+    mov rdx, rsi ; le paso la longitud del string
+
+
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_halt:
+     push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 18
+    mov rbx, 1
+    mov rcx, 1 ; le paso el string
+    mov rdx, 1 ; le paso la longitud del string
+    mov r8, 1
+
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_get_pid:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 11
+    mov rbx, 1
+    mov rcx, 1 ; le paso el string
+    mov rdx, 1 ; le paso la longitud del string
+    mov r8, 1
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_force_new_selection:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 17
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_ps:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 14
+    mov rbx, 1
+    mov rcx, 1 ; le paso el string
+    mov rdx, 1 ; le paso la longitud del string
+    mov r8, 1
+
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_kill:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 12
+    mov rbx, rdi
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_change_state:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 16
+    mov rbx, rdi
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_set_priority:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 15
+    mov rbx, rdi
+    mov rcx, rsi
     int 80h
 
     pop rdx

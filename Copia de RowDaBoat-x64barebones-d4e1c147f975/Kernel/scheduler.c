@@ -15,33 +15,19 @@
 static pcb * current; 
 static pcb * idle_process;
 static pcb * first, *last;
-int counter = 0;
+static int counter = 0;
 void printListt();
 
 uint64_t scheduler(uint64_t stack_pointer){
     timer_handler();
-    // drawString(num_to_string(stack_pointer));
-    // drawString("\n");
-    // //drawString("F");
-    // drawString(num_to_string(current->sp));
-    // drawString("\n");
-    
-    // return current->sp;
-
     if(first == NULL){
         init_scheduler();
     }
-    // drawString(num_to_string(current->bp));
-    // drawString("\n");
-    // drawString(num_to_string(current->sp));
-    // drawString("\n");
     current->sp = stack_pointer;
-    // drawString(num_to_string(current->sp));
-    // drawString("\n");
     counter++;
     if(counter >= current->priority || current == idle_process){
-        if(current->state == EXECUTING){
-            current->state = READY;
+        if(current->state == 2){
+            current->state = 1;
         }
         pcb * aux = get_next();
         current = aux;
@@ -55,7 +41,7 @@ uint64_t scheduler(uint64_t stack_pointer){
     return current->sp;
 }
 
-void printListt(){
+void printList(){
     pcb * aux = first;
     drawString(idle_process->name);
     while(aux != NULL){
@@ -112,8 +98,10 @@ void init_scheduler(){
 }
 
 void force_new_selection(){
+    drawString("MIERDAAAAAAA\n");
     counter = current->priority + 1;
     call_scheduler();
+    // scheduler(current->sp);
 }
 
 state get_pcb_state(uint64_t pid){
@@ -171,12 +159,30 @@ uint64_t get_ppid(){
     return current->ppid;
 }
 
+pcb * get_prev(){
+    pcb * aux = first;
+    while(aux->next->pid != current->pid){
+        aux = aux->next;
+    }
+    return aux;
+}
+
 //retorna 0 si no pudo y 1 si tuvo exito
 uint64_t kill_process(uint64_t pid){
-
+    //si no se puede matar el idle mentemos un if pid == 0 return 0;
     if(current->pid == pid){
-        free_list_free(current);
-        current = NULL;
+        // buddy_free(current);
+        pcb * current_prev = get_prev();
+        current_prev->next = current->next;
+        buddy_free(current);
+        if(current == last){
+            last = current_prev;
+            current = first;
+        } else{
+            current = current->next;
+        }
+        // pcb * current_aux = current;
+        // current_aux = NULL;
         call_scheduler();
         return 1;
     }
@@ -235,7 +241,7 @@ pcb * get_pcb(uint64_t pid){
         while(aux->next != NULL && aux->pid != pid){
             aux = aux->next;
         }
-        if(aux->next != NULL){
+        if(aux->pid == pid ){
             return aux;
         }
     }
@@ -253,16 +259,16 @@ void print_all(){
         return;
     }
     pcb * pcb_aux = first;
-    drawString("Name    Pid    PPid    Priority    State    BP    SP    Type");
+    drawString("Name      Pid     PPid     Priority    State        BP          SP        Type\n");
     for(;pcb_aux != NULL; pcb_aux = pcb_aux->next){
         drawString(pcb_aux->name);
-        drawString("    ");
+        drawString("       ");
         drawNumber(pcb_aux->pid, 0xFFFFFF, 0x000000);
-        drawString("    ");
+        drawString("       ");
         drawNumber(pcb_aux->ppid, 0xFFFFFF, 0x000000);
-        drawString("    ");
+        drawString("         ");
         drawNumber(pcb_aux->priority, 0xFFFFFF, 0x000000);
-        drawString("    ");
+        drawString("       ");
         if(pcb_aux->state == READY){
             drawString("Ready");
         }
@@ -272,11 +278,11 @@ void print_all(){
         else if(pcb_aux->state == EXECUTING){
             drawString("Executing");
         }
-        drawString("    ");
+        drawString("     ");
         drawNumber(pcb_aux->bp, 0xFFFFFF, 0x000000);
-        drawString("    ");
-        drawNumber(pcb_aux->sp), 0xFFFFFF, 0x000000;
-        drawString("    ");
+        drawString("     ");
+        drawNumber(pcb_aux->sp, 0xFFFFFF, 0x000000);
+        drawString("       ");
         if(pcb_aux->type == FORE){
             drawString("Foreground");
         }

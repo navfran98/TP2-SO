@@ -19,7 +19,7 @@ pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type
     to_ret->bp = init_stack(start_address, rip);
     to_ret->sp = to_ret->bp;
     to_ret->stack = stack_ptr;
-    to_ret->state = READY;
+    to_ret->state = 1;
     to_ret->type = type;
     to_ret->priority = priority;
     to_ret->pid = process_count;

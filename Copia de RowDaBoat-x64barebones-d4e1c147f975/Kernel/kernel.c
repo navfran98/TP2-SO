@@ -20,6 +20,7 @@
 #include <kernel.h>
 #include <process.h>
 #include <interrupts.h>
+// #include <scheduler.h>
 
 
 extern uint8_t text;
@@ -66,6 +67,7 @@ void * initializeKernelBinary() {
 	
 	return getStackBase();
 }
+
 void joaco(){
 	while(1){
 		_hlt();
@@ -74,12 +76,13 @@ void joaco(){
 
 int main() {
 	//crear la shell
-
 	create_process("SHELL", sampleCodeModuleAddress, 5, FORE);
-	create_process("JOACO", &joaco, 2, FORE);
+	create_process("JOACO", &joaco, 3, BACK);
 	load_idt();
 
 	_hlt();
+
+
 	drawString("If this is shown, then something is wrong! \n");
 	// while(1){             
 	// 	((EntryPoint)sampleCodeModuleAddress)();

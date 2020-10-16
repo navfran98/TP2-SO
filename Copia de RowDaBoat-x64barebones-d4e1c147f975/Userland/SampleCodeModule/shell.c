@@ -12,12 +12,37 @@ static int search_command(char command_with_possible_parameter[], char* paramete
 static char shell_buffer[SHELL_BUFFER_SIZE] = {'\0'};
 static uint8_t k = 0; // to move across the buffer
 
+void nava(){
+    print("NAVA EJECUTANDO\n");
+    syscall_ps();
+    syscall_kill(syscall_get_pid());
+    // while(1){
+    //     syscall_halt();
+    // }
+}
 
 void start_shell() {
 
     print(">>");
-    shell_main();
+    //funciona poniendo 1=BACK y 0=FORE
+    syscall_create_process("NAVA", &nava, 3, 0);
+    uint64_t a = syscall_get_pid();
 
+    //CON ESTO SE VE Q ITERA BIEN SALTEANDOSE AL IDLE
+    //PROBLEMAS AL LLAMAR CALL_SCHEDULER ----->SOLUCIONAR IMPORTANTE
+    syscall_ps();
+    // syscall_kill(a);
+    // syscall_ps();
+    // syscall_change_state(3);
+    // syscall_force_new_selection();
+    // syscall_force_new_selection();
+    // syscall_ps();
+
+    // uint64_t new_prio = 4;
+    // syscall_set_priority(a, new_prio); //pasando por ejemplo (a, 2) te pone cualquier cosa al caster el 2
+    // syscall_ps();
+    
+    shell_main();
 }
 
 
@@ -27,7 +52,6 @@ static void shell_main() {
     while(1) {
         c = getChar();
         if(c != -1) {
-            print("h");
             if(c == '\n') {
                 putchar(c);     // print the '\n' to move to the next line
                 shell_buffer[k++] = '\0';
