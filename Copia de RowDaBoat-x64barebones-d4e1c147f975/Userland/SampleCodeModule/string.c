@@ -1,3 +1,4 @@
+#include <stdint.h>
 
 // CODIGO SACADO DE INTERNET
 int strcmp (const char *p1, const char *p2) {
@@ -35,4 +36,15 @@ int string_to_num(char* parameter) {
         length--;
     }
     return result;
+}
+
+
+void * memset(void * destiation, int32_t c, uint64_t length) {
+	uint8_t chr = (uint8_t)c;
+	char * dst = (char*)destiation;
+
+	while(length--)
+		dst[length] = chr;
+
+	return destiation;
 }

@@ -3,6 +3,8 @@
 #include "string.h"
 #include <stdint.h>
 #include "syscalls.h"
+#include "test_processes.h"
+#include "test_prio.h"
 
 #define SHELL_BUFFER_SIZE (128)+(128/2)  // 1 linea y media
 
@@ -24,13 +26,18 @@ void nava(){
 void start_shell() {
 
     print(">>");
+
+    // test_mm();
+     test_processes();
+    // test_prio();
+
     //funciona poniendo 1=BACK y 0=FORE
-    syscall_create_process("NAVA", &nava, 3, 0);
-    uint64_t a = syscall_get_pid();
+    //syscall_create_process("NAVA", &nava, 3, 0);
+    //uint64_t a = syscall_get_pid();
 
     //CON ESTO SE VE Q ITERA BIEN SALTEANDOSE AL IDLE
     //PROBLEMAS AL LLAMAR CALL_SCHEDULER ----->SOLUCIONAR IMPORTANTE
-    syscall_ps();
+   // syscall_ps();
     // syscall_kill(a);
     // syscall_ps();
     // syscall_change_state(3);

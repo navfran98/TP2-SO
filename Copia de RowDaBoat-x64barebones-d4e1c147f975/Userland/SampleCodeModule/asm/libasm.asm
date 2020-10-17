@@ -239,7 +239,7 @@ syscall_create_process:
     pop rdx
     pop rcx
     pop rbx
-    pop rax
+    ; pop rax
     mov rsp, rbp
     pop rbp
     ret
@@ -348,7 +348,7 @@ syscall_kill:
     pop rdx
     pop rcx
     pop rbx
-    pop rax
+    ; pop rax
     mov rsp, rbp
     pop rbp
     ret
@@ -368,7 +368,7 @@ syscall_change_state:
     pop rdx
     pop rcx
     pop rbx
-    pop rax
+    ; pop rax
     mov rsp, rbp
     pop rbp
     ret
