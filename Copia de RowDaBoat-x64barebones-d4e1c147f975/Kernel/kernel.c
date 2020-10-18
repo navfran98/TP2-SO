@@ -53,7 +53,6 @@ void * initializeKernelBinary() {
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,
 		sampleDataModuleAddress
-		// shellModuleAddress
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);
@@ -82,11 +81,7 @@ int main() {
 
 	_hlt();
 
-
 	drawString("If this is shown, then something is wrong! \n");
-	// while(1){             
-	// 	((EntryPoint)sampleCodeModuleAddress)();
-	// }
 	
 	return 0;
 }

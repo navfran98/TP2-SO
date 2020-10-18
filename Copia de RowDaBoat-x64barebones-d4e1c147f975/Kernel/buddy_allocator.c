@@ -240,7 +240,7 @@ void buddy_free(void * ptr){
    free_children(node);
    update_states(node);
    drawString("\nHago free de: ");
-   drawNumber(node->starting_address);
+   drawNumber(node->starting_address, 0xFFFFFF, 0x000000);
 }
 
 void buddy_check_mem_state(uint64_t * state){
@@ -250,11 +250,11 @@ void buddy_check_mem_state(uint64_t * state){
    state[2] = tree->used_mem;
 
    drawString("Total mem: ");
-   drawNumber(tree->total_mem, 33333,3);
+   drawNumber(tree->total_mem, 0xFFFFFF, 0x000000);
    drawString("\nFree mem: ");
-   drawNumber(tree->free_mem, 33333,3);
+   drawNumber(tree->free_mem, 0xFFFFFF, 0x000000);
    drawString("\nUsed mem: ");
-   drawNumber(tree->used_mem, 33333,3);
+   drawNumber(tree->used_mem, 0xFFFFFF, 0x000000);
 }
 
 void printTabs(int level){

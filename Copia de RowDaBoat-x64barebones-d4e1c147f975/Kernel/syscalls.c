@@ -27,6 +27,8 @@
 #define SET_STATE_PROCESS 16
 #define FORCE_NEW_SELECTION 17
 #define HALT 18
+#define BLOCK 19
+#define UNBLOCK 20
 
 //CAMBIAR NOMBRES DE LOS PARAMETROS POR NOMBRES GENERALES PARA NO CONFUNDIR
 extern int segundos();
@@ -104,6 +106,16 @@ void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint6
 
         case FORCE_NEW_SELECTION: {
             force_new_selection();
+            break;
+        }
+
+        case BLOCK: {
+            return block();
+            break;
+        }
+
+        case UNBLOCK: {
+            return unblock();
             break;
         }
 

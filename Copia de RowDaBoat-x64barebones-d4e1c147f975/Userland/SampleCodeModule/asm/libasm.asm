@@ -1,6 +1,7 @@
+GLOBAL num_to_string
+;syscalls
 GLOBAL syscall_write
 GLOBAL syscall_read
-GLOBAL num_to_string
 GLOBAL syscall_malloc
 GLOBAL syscall_free
 GLOBAL syscall_check_mem_state
@@ -15,6 +16,8 @@ GLOBAL syscall_kill
 GLOBAL syscall_force_new_selection
 GLOBAL syscall_change_state
 GLOBAL syscall_set_priority
+GLOBAL syscall_block
+GLOBAL syscall_unblock
 
 section .bss
     numstr resb 10  ; used by num_to_string function 
@@ -96,8 +99,6 @@ syscall_buddy_free:
     mov r8, rdi     ;le paso la direccion
 
     int 80h
-
-    
 
     pop rdx
     pop rcx
@@ -192,8 +193,6 @@ syscall_malloc:
 ;;sino vemos despues como hacemos
 
 
-
-
 syscall_write:
     push rbp
     mov rbp, rsp
@@ -206,7 +205,6 @@ syscall_write:
     mov rbx, 1
     mov rcx, rdi ; le paso el string
     mov rdx, rsi ; le paso la longitud del string
-    mov r8, 1
 
     int 80h
 
@@ -253,11 +251,6 @@ syscall_halt:
     push rdx
 
     mov rax, 18
-    mov rbx, 1
-    mov rcx, 1 ; le paso el string
-    mov rdx, 1 ; le paso la longitud del string
-    mov r8, 1
-
     int 80h
 
     pop rdx
@@ -277,10 +270,6 @@ syscall_get_pid:
     push rdx
 
     mov rax, 11
-    mov rbx, 1
-    mov rcx, 1 ; le paso el string
-    mov rdx, 1 ; le paso la longitud del string
-    mov r8, 1
     int 80h
 
     pop rdx
@@ -318,11 +307,6 @@ syscall_ps:
     push rdx
 
     mov rax, 14
-    mov rbx, 1
-    mov rcx, 1 ; le paso el string
-    mov rdx, 1 ; le paso la longitud del string
-    mov r8, 1
-
     int 80h
 
     pop rdx
@@ -362,6 +346,46 @@ syscall_change_state:
     push rdx
 
     mov rax, 16
+    mov rbx, rdi
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    ; pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_block:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 19
+    mov rbx, rdi
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    ; pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_unblock:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 20
     mov rbx, rdi
     int 80h
 

@@ -28,7 +28,7 @@ void start_shell() {
     print(">>");
 
     // test_mm();
-     test_processes();
+    // test_processes();
     // test_prio();
 
     //funciona poniendo 1=BACK y 0=FORE

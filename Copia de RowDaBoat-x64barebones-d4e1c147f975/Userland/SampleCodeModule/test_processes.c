@@ -57,7 +57,7 @@ void test_processes(){
 
           case 1:
             if (p_rqs[rq].state == RUNNING){
-              if(syscall_change_state(p_rqs[rq].pid) == 0){          // TODO: Port this as required
+              if(syscall_block(p_rqs[rq].pid) == 0){          // TODO: Port this as required
                 print("Error blocking process\n");       // TODO: Port this as required
                 return;
               }
@@ -70,7 +70,7 @@ void test_processes(){
       // Randomly unblocks processes
       for(rq = 0; rq < MAX_PROCESSES; rq++)
         if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2){
-          if(syscall_change_state(p_rqs[rq].pid) == 0){            // TODO: Port this as required
+          if(syscall_unblock(p_rqs[rq].pid) == 0){            // TODO: Port this as required
             print("Error unblocking process\n");         // TODO: Port this as required
             return;
           }

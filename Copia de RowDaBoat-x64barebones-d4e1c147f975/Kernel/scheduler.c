@@ -16,7 +16,6 @@ static pcb * current;
 static pcb * idle_process;
 static pcb * first, *last;
 static int counter = 0;
-void printListt();
 
 uint64_t scheduler(uint64_t stack_pointer){
     timer_handler();
@@ -39,17 +38,6 @@ uint64_t scheduler(uint64_t stack_pointer){
         return current->sp;
     }
     return current->sp;
-}
-
-void printList(){
-    pcb * aux = first;
-    drawString(idle_process->name);
-    while(aux != NULL){
-        drawString("Process: ");
-        drawString(aux->name);
-        drawString("\n");
-        aux = aux->next;
-    }
 }
 
 pcb * get_next(){
@@ -169,9 +157,7 @@ pcb * get_prev(){
 
 //retorna 0 si no pudo y 1 si tuvo exito
 uint64_t kill_process(uint64_t pid){
-    //si no se puede matar el idle mentemos un if pid == 0 return 0;
     if(current->pid == pid){
-        // buddy_free(current);
         pcb * current_prev = get_prev();
         current_prev->next = current->next;
         buddy_free(current);
@@ -181,8 +167,6 @@ uint64_t kill_process(uint64_t pid){
         } else{
             current = current->next;
         }
-        // pcb * current_aux = current;
-        // current_aux = NULL;
         call_scheduler();
         return 1;
     }
@@ -199,7 +183,6 @@ uint64_t kill_process(uint64_t pid){
     }
     if(aux == first){
         first = first->next;
-        
     }
     else if(aux == last){
         last = aux_prev;
@@ -213,26 +196,60 @@ uint64_t kill_process(uint64_t pid){
     
 }
 
-//sacarla y cambiarla por block
-void toggle_block(uint64_t pid){
+// //sacarla y cambiarla por block
+// void toggle_block(uint64_t pid){
+//     pcb * aux = get_pcb(pid);
+
+//     if(aux == NULL){ //mal pasado el pid
+//         return;
+//     }
+
+//     if(aux->state == BLOCKED){
+//         aux->state = READY;
+//         return;
+//     }
+
+//     if(aux->state == EXECUTING){
+//         aux->state = BLOCKED;
+//         call_scheduler();
+//         //busco nuevo proceso a ejecutar
+//     }
+//     aux->state = BLOCKED;
+// }
+
+uint64_t block(uint64_t pid){
     pcb * aux = get_pcb(pid);
 
     if(aux == NULL){ //mal pasado el pid
         return;
     }
 
-    if(aux->state == BLOCKED){
-        aux->state = READY;
+    if(aux->state == EXECUTING){
+        set_state(pid, BLOCKED);
+        call_scheduler();
+        return 1;
+    }
+    if(aux->state == READY || aux->state == BLOCKED){
+        set_state(pid, BLOCKED);
+        return 1;
+    }
+    return 0; 
+}
+
+uint64_t unblock(uint64_t pid){
+    pcb * aux = get_pcb(pid);
+
+    if(aux == NULL){ //mal pasado el pid
         return;
     }
 
-    if(aux->state == EXECUTING){
-        aux->state = BLOCKED;
-        call_scheduler();
-        //busco nuevo proceso a ejecutar
+    if(aux->state == BLOCKED || aux->state == READY){
+        set_state(pid, READY);
+        return 1;
     }
-    aux->state = BLOCKED;
+    return 0;
 }
+
 
 pcb * get_pcb(uint64_t pid){
     if(first != NULL){
