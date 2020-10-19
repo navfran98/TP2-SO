@@ -76,7 +76,7 @@ void joaco(){
 int main() {
 	//crear la shell
 	create_process("SHELL", sampleCodeModuleAddress, 5, FORE);
-	create_process("JOACO", &joaco, 3, BACK);
+//	create_process("JOACO", &joaco, 3, BACK);
 	load_idt();
 
 	_hlt();

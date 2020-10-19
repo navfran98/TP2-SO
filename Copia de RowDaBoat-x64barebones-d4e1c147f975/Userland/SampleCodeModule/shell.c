@@ -5,6 +5,7 @@
 #include "syscalls.h"
 #include "test_processes.h"
 #include "test_prio.h"
+#include "test_sync.h"
 
 #define SHELL_BUFFER_SIZE (128)+(128/2)  // 1 linea y media
 
@@ -26,6 +27,7 @@ void nava(){
 void start_shell() {
 
     print(">>");
+    test_sync();
 
     // test_mm();
     // test_processes();

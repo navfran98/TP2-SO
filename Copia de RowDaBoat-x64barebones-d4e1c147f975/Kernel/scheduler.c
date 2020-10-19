@@ -86,7 +86,7 @@ void init_scheduler(){
 }
 
 void force_new_selection(){
-    drawString("MIERDAAAAAAA\n");
+   
     counter = current->priority + 1;
     call_scheduler();
     // scheduler(current->sp);
@@ -221,7 +221,7 @@ uint64_t block(uint64_t pid){
     pcb * aux = get_pcb(pid);
 
     if(aux == NULL){ //mal pasado el pid
-        return;
+        return 0;
     }
 
     if(aux->state == EXECUTING){
@@ -240,7 +240,7 @@ uint64_t unblock(uint64_t pid){
     pcb * aux = get_pcb(pid);
 
     if(aux == NULL){ //mal pasado el pid
-        return;
+        return 0;
     }
 
     if(aux->state == BLOCKED || aux->state == READY){

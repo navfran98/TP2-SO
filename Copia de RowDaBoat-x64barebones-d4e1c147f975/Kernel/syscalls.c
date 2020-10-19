@@ -110,12 +110,12 @@ void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint6
         }
 
         case BLOCK: {
-            return block();
+            return block(arg2);
             break;
         }
 
         case UNBLOCK: {
-            return unblock();
+            return unblock(arg2);
             break;
         }
 

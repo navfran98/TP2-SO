@@ -1,4 +1,4 @@
-Comentado porque el endless_loop se repite en otro test
+//Comentado porque el endless_loop se repite en otro test
 
 #include <stdint.h>
 #include <stdio.h>
@@ -12,7 +12,8 @@ void bussy_wait(uint64_t n){
   uint64_t i;
   for (i = 0; i < n; i++);
 }
-void endless_loop(){
+
+void endless_loop2(){
   uint64_t pid = syscall_get_pid();
 
   while(1){
@@ -28,7 +29,7 @@ void test_prio(){
   uint64_t i;
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
-    pids[i] = syscall_create_process("endless_loop", &endless_loop, 5, 0);
+    pids[i] = syscall_create_process("endless_loop", &endless_loop2, 5, 0);
 
   bussy_wait(WAIT);
   print("\nCHANGING PRIORITIES...\n");
