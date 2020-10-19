@@ -5,7 +5,7 @@
 static sem * first = NULL;
 static sem * last = NULL;
 uint16_t sem_count = 0;
-
+extern char* num_to_string(int num);
 //
 sem * create_sem(int value){
     sem * new_sem = (sem *) syscall_buddy_malloc(sizeof(sem));
@@ -85,11 +85,8 @@ int hasPid(sem * s, uint64_t pid){
 
 //no sabemos si hay q usar &(s->lock) o s->lock
 void sem_wait(sem * s, uint64_t pid){
-    print("entre al sem wait\n");
     while(1){
-        print("Toy en el semwait!!!!!!!!\n");
         acquire(&(s->lock));
-        print("ADQUIRI EL LOCK\n");
         if(s->value > 0){
             s->value--;
             release(&(s->lock));
@@ -112,8 +109,9 @@ void sem_wait(sem * s, uint64_t pid){
         }
         release(&(s->lock));
     }
-    print("salgo del sem Wait\n");
+    //print("salgo del sem Wait\n");
 }
+
 
 void sem_post(sem * s, uint64_t pid){
     acquire(&(s->lock));
@@ -139,10 +137,32 @@ void sem_post(sem * s, uint64_t pid){
     release(&(s->lock));
 }
 
-
-
-
 void print_all_semaphores(){
     //hacer una funcion como el print_all de scheduler
+    if(first == NULL){
+        print("There isn't a single semaphore\n");
+        return;
+    }
+    sem * s = first;
+    print("Sem_id      Value      Lock      Processes Blocked\n");
+    for(;s != NULL; s = s->next){
+        print(num_to_string(s->sem_id));
+        print("       ");
+        print(num_to_string(s->value));
+        print("       ");
+        print(num_to_string(s->lock));
+        print("       ");
+        if(s->blocked_pid_list->first == NULL){
+            print("No processes are blocked by this sem");
+        }else{
+            list_node * n = s->blocked_pid_list->first;
+            while(n != NULL){
+                print(num_to_string(n->pid));
+                print("  ");
+                n = n->next;
+            }
+        }
+        print("\n");
+    }
 }
 

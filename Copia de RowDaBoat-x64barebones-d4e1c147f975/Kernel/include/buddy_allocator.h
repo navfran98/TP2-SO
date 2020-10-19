@@ -3,7 +3,7 @@
 //falta incluir las structs aca
 void * buddy_malloc(uint64_t size);
 void buddy_free(void * ptr);
-void buddy_check_mem_state(uint64_t * state);
+void buddy_check_mem_state();
 // void occupy_children(block * block);
 // void free_children(block * block);
 // void update_states(block * node);

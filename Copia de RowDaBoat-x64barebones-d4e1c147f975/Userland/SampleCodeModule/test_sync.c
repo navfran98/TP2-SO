@@ -3,31 +3,22 @@
 #include <syscalls.h>
 #include <semaphores_manager.h>
 
-
-#define TOTAL_PAIR_PROCESSES 2
-#define SEM_ID "sem"
+#define TOTAL_PAIR_PROCESSES 3
 
 extern char* num_to_string(int num);
+extern void _yield();
+uint64_t global;  //shared memory
 
-int64_t global;  //shared memory
-
-void slowInc(int64_t *p, int64_t inc){
+void slowInc(uint64_t *p, uint64_t inc, uint64_t with_sem){
    int64_t aux = *p;
+  //  if(with_sem == 0){
+   //_yield();
+   syscall_force_new_selection();
+  //  }
    aux += inc;
-//   yield(); //NO RECONOCE ESTO....... 
-//    syscall_force_new_selection();
    *p = aux;
+   
 }
-
-// void slowInc(long int *p, int inc){
-//   long int aux = *p;
-// //   if(state == NO_SEM) {
-// //     for(uint64_t i=0; i<100; i++){ /* busy waiting */ }
-// //   }
-//   aux += inc;
-//   *p = aux;
-// }
-
 
 void inc_sem(){
     uint64_t i;
@@ -37,65 +28,69 @@ void inc_sem(){
     
 
     sem * s = create_sem(1);
-  
+    uint64_t pid = syscall_get_pid();
     for (i = 0; i < N; i++){
-        print("EL VALOR DEL LOCK ANTES DEL WAIT ES: ");
-        print(num_to_string(s->lock));
-        print("\n");
-        sem_wait(s, syscall_get_pid());
-        print("EL VALOR DEL LOCK DESPUES DEL WAIT ES: ");
-        print(num_to_string(s->lock));
-        print("\n");
 
-        slowInc(&global, value);
+        // print(num_to_string(global));
+        // print("\n");
+        sem_wait(s,pid);
 
-        print("EL VALOR DEL LOCK ANTES DEL POST ES: ");
-        print(num_to_string(s->lock));
-        print("\n");
-        sem_post(s, syscall_get_pid());
-        print("EL VALOR DEL LOCK DESPUES DEL POST ES: ");
-        print(num_to_string(s->lock));
-        print("\n");
+        slowInc(&global, value, 1);
 
+        sem_post(s, pid);
 
-
-        print("termine un ciclo\n");
     }
-    print("CHAUUUU\n");
+    
 
     if(kill_sem(s->sem_id) == 0){
         print("Error en kill\n");
     }
 
-    print("Final value: ");
+    print("\nFinal value: ");
     print(num_to_string(global));
     print("\n");
-  //print("Final value: %d\n", global);
+    // syscall_ps();
+    // syscall_kill(5);
+    // syscall_ps();
+    syscall_kill(pid);
+    
 }
+
 
 void inc_no_sem(uint64_t sem ){
   uint64_t i;
-  uint64_t N = 100000;
+  uint64_t N = 50;
   
   for (i = 0; i < N; i++){
-    slowInc(&global, 1);
-  }
-  
-    print("Final value: ");
+    print("pid: ");
+    print(num_to_string(syscall_get_pid()));
+    print("num: "); 
     print(num_to_string(global));
-    print("\n");
+    print("\n"); 
+    slowInc(&global, 1, 0);
+  }
+
+  print("Final value: ");
+  print(num_to_string(global));
+  print("\n");
+
+  print("Sale seppuku, mi pid es: ");
+  print(num_to_string(syscall_get_pid()));
+  print("\n");
+  syscall_ps();
+  //syscall_kill(syscall_get_pid());
+  
 }
 
 void test_sync(){
   uint64_t i;
-
   global = 0;
 
   print("CREATING PROCESSES...(WITH SEM)\n");
 
-  for(i = 0; i < 2; i++){
+  for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
     syscall_create_process("inc_sem", &inc_sem, 5, 0);
-    syscall_create_process("inc_sem", &inc_sem, 5, 0); //Sera porque es la misma direccion?
+    syscall_create_process("inc_sem", &inc_sem, 3, 0);
   }
 }
 
@@ -107,8 +102,8 @@ void test_no_sync(){
   print("CREATING PROCESSES...(WITHOUT SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    syscall_create_process("inc_no_sem", &inc_no_sem, 5, 0);
-    syscall_create_process("inc_no_sem", &inc_no_sem, 5, 0);
+    syscall_create_process("inc_no_sem", &inc_no_sem, 1, 0);
+    syscall_create_process("inc_no_sem", &inc_no_sem, 1, 0);
   }
 }
 

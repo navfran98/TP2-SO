@@ -39,7 +39,7 @@ void start_shell() {
 
     //CON ESTO SE VE Q ITERA BIEN SALTEANDOSE AL IDLE
     //PROBLEMAS AL LLAMAR CALL_SCHEDULER ----->SOLUCIONAR IMPORTANTE
-   // syscall_ps();
+    // syscall_ps();
     // syscall_kill(a);
     // syscall_ps();
     // syscall_change_state(3);

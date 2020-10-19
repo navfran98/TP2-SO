@@ -50,7 +50,7 @@ void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint6
         }
         
         case CHECK_MEM_STATE_BUDDY:{
-            buddy_check_mem_state((uint64_t *) arg5);
+            buddy_check_mem_state();
             break;
         }
 

@@ -115,9 +115,6 @@ uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64
 
 uint8_t get_level(uint64_t size){
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
-   // drawNumber(size,412412,4);
-   // drawString("<-size  free mem->");
-   // drawNumber(buddy_tree->free_mem,3123123,33);
 
    if(size > buddy_tree->free_mem)
       return -1;
@@ -239,15 +236,15 @@ void buddy_free(void * ptr){
    tree->used_mem -= SIZE_OF_BLOCKS_AT_LEVEL(node->level,tree->total_mem);
    free_children(node);
    update_states(node);
-   drawString("\nHago free de: ");
-   drawNumber(node->starting_address, 0xFFFFFF, 0x000000);
+   // drawString("\nHago free de: ");
+   // drawNumber(node->starting_address, 0xFFFFFF, 0x000000);
 }
 
-void buddy_check_mem_state(uint64_t * state){
+void buddy_check_mem_state(){
    buddy_list_header * tree = (buddy_list_header *) tree_base_address;
-   state[0] = tree->total_mem;
-   state[1] = tree->free_mem;
-   state[2] = tree->used_mem;
+   // state[0] = tree->total_mem;
+   // state[1] = tree->free_mem;
+   // state[2] = tree->used_mem;
 
    drawString("Total mem: ");
    drawNumber(tree->total_mem, 0xFFFFFF, 0x000000);

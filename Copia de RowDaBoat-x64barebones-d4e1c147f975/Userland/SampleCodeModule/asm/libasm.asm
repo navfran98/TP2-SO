@@ -31,9 +31,7 @@ section .text
 ;     ret
 
 
-
-
-
+;SYSCALLS PARA MANEJO DE MEMORIA
 syscall_buddy_check_mem_state:
     push rbp
     mov rbp, rsp
@@ -42,11 +40,7 @@ syscall_buddy_check_mem_state:
     push rcx
     push rdx
 
-    mov rax, 10     ;ID para malloc
-    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
-    mov rcx, 1      ;idem
-    mov rdx, 1      ;idem
-    mov r8, rdi
+    mov rax, 10 
 
     int 80h
 
@@ -194,7 +188,7 @@ syscall_malloc:
 ;;MI IDEA ES QUE LA SYSCALL RETORNE EL VALOR QUE OBTUVO.
 ;;sino vemos despues como hacemos
 
-
+;SYSCALLS READ Y WRITE
 syscall_write:
     push rbp
     mov rbp, rsp
@@ -218,6 +212,8 @@ syscall_write:
     pop rbp
     ret
 
+
+;SYSCALLS CORRESPONDIENTES AL SCHEDULER Y PROCESOS
 syscall_create_process:
     push rbp
     mov rbp, rsp
@@ -415,7 +411,7 @@ syscall_set_priority:
     pop rdx
     pop rcx
     pop rbx
-    pop rax
+    ; pop rax
     mov rsp, rbp
     pop rbp
     ret

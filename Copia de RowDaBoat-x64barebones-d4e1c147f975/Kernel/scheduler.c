@@ -25,16 +25,16 @@ uint64_t scheduler(uint64_t stack_pointer){
     current->sp = stack_pointer;
     counter++;
     if(counter >= current->priority || current == idle_process){
-        if(current->state == 2){
-            current->state = 1;
+        if(current->state == EXECUTING){
+            current->state = READY;
         }
         pcb * aux = get_next();
         current = aux;
         current->state = EXECUTING;
         counter = 0;
-        drawString("Running: ");
-        drawString(current->name);
-        drawString("\n");
+        // drawString("Running: ");
+        // drawString(current->name);
+        //drawString("\n");
         return current->sp;
     }
     return current->sp;
@@ -129,6 +129,9 @@ uint64_t set_priority(uint64_t pid, uint64_t new_priority){
     if(aux == NULL){
         return 0;
     }
+    if(new_priority < LOWEST_PRIO || new_priority > HIGHEST_PRIO){
+        return 0;
+    }
     aux->priority = new_priority;
     return 1;
 }   
@@ -170,7 +173,6 @@ uint64_t kill_process(uint64_t pid){
         call_scheduler();
         return 1;
     }
-
     pcb * aux = first;
     pcb * aux_prev = aux;
 
