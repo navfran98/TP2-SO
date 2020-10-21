@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "test_util.h"
+#include <syscalls.h>
 
 //si pongo 10 y 1024 nomas, funka..................... O.o
 
 #define MAX_BLOCKS 10
-#define MAX_MEMORY 1024 * 3  //Should be around 80% of memory managed by the MM
+#define MAX_MEMORY 1024   //Should be around 80% of memory managed by the MM
 
 #define NULL ((void*)0)
 
@@ -22,13 +23,12 @@ void test_mm(){
   while (1){
     rq = 0;
     total = 0;
-
         
     // Request as many blocks as we can
-    print("Request\n");
+    print("Malloc\n");
     while(rq < MAX_BLOCKS && total < MAX_MEMORY){
       mm_rqs[rq].size = GetUniform(MAX_MEMORY - total - 1) + 1;
-      mm_rqs[rq].address = syscall_buddy_malloc(mm_rqs[rq].size); // TODO: Port this call as required
+      mm_rqs[rq].address = syscall_malloc(mm_rqs[rq].size); // TODO: Port this call as required
       //TODO: check if NULL
       if(mm_rqs[rq].address == NULL){
         print("ERROR!!!!!!\n");
@@ -36,6 +36,9 @@ void test_mm(){
       total += mm_rqs[rq].size;
       rq++;
     }
+    print("Blocks generated: ");
+    print(num_to_string(rq));
+    print("\n");
   
     // Set
      print("Set\n");
@@ -58,11 +61,7 @@ void test_mm(){
      print("Free\n");
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address != NULL)
-        syscall_buddy_free(mm_rqs[i].address);  // TODO: Port this call as required
+        syscall_free(mm_rqs[i].address);  // TODO: Port this call as required
   } 
-}
 
-// int main(){
-//   test_mm();
-//   return 0;
-// }
+}

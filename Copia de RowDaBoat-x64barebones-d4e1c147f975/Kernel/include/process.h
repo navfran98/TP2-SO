@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-typedef enum {BLOCKED=0,READY,EXECUTING,NOT_FOUND} state;
+typedef enum {BLOCKED=0,READY,EXECUTING,NOT_FOUND,KILLED} state;
 typedef enum {FORE=0, BACK} process_type;
 
 typedef struct process_data{

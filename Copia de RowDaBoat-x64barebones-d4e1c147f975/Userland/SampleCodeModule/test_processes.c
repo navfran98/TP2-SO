@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "test_util.h"
 #include <syscalls.h>
+#include <string.h>
 
 //TO BE INCLUDED
 void endless_loop(){
@@ -21,25 +22,33 @@ void test_processes(){
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
-
+  
   while (1){
 
+    print("ENTRANDO AL WHILEEEEEEEE\n");
+
     // Create MAX_PROCESSES processes
+    print("Creating processes...\n");
     for(rq = 0; rq < MAX_PROCESSES; rq++){
-      p_rqs[rq].pid = syscall_create_process("endless_loop", &endless_loop, 5, 0);  // TODO: Port this call as required
+      p_rqs[rq].pid = syscall_create_process("endless_loop", &endless_loop, 2, 0);  // TODO: Port this call as required
 
       if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
         print("Error creating process\n");               // TODO: Port this as required
         return;
       }else{
+        // print("Creating process with pid: ");
+        // print(num_to_string(p_rqs[rq].pid));
+        // print("\n");
         p_rqs[rq].state = RUNNING;
         alive++;
       }
     }
 
+    
     // Randomly kills, blocks or unblocks processes until every one has been killed
     while (alive > 0){
 
+      print("KILLING/BLOCKING PROCESSES\n");
       for(rq = 0; rq < MAX_PROCESSES; rq++){
         action = GetUniform(2) % 2; 
 
@@ -68,6 +77,7 @@ void test_processes(){
       }
 
       // Randomly unblocks processes
+      print("UNBLOCKING PROCESSES\n");
       for(rq = 0; rq < MAX_PROCESSES; rq++)
         if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2){
           if(syscall_unblock(p_rqs[rq].pid) == 0){            // TODO: Port this as required
@@ -76,6 +86,7 @@ void test_processes(){
           }
           p_rqs[rq].state = RUNNING; 
         }
-    } 
+    }
+    print("All processes have been killed\n"); 
   }
 }

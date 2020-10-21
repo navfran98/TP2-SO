@@ -22,91 +22,10 @@ GLOBAL syscall_unblock
 section .bss
     numstr resb 10  ; used by num_to_string function 
 
-
 section .text
-
-;DSP HACERLO SOLO CON ESTA
-; syscall:
-;     int 80h
-;     ret
 
 
 ;SYSCALLS PARA MANEJO DE MEMORIA
-syscall_buddy_check_mem_state:
-    push rbp
-    mov rbp, rsp
-    push rax
-    push rbx
-    push rcx
-    push rdx
-
-    mov rax, 10 
-
-    int 80h
-
-    pop rdx
-    pop rcx
-    pop rbx
-    ;pop rax
-
-    mov rsp, rbp
-    pop rbp
-    ret
-
-
-syscall_buddy_malloc:
-    push rbp
-    mov rbp, rsp
-    push rax
-    push rbx
-    push rcx
-    push rdx
-
-    mov rax, 8      ;ID para malloc del buddy
-    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
-    mov rcx, 1      ;idem
-    mov rdx, rdi    ;Le paso el size
-    mov r8, 1
-
-    int 80h
-
-    pop rdx
-    pop rcx
-    pop rbx
-    ;pop rax
-
-    mov rsp, rbp
-    pop rbp
-    ret
-
-
-syscall_buddy_free:
-    push rbp
-    mov rbp, rsp
-    push rax
-    push rbx
-    push rcx
-    push rdx
-
-    mov rax, 9      ;ID para free del buddy
-    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
-    mov rcx, 1      ;idem
-    mov rdx, 1      ;idem
-    mov r8, rdi     ;le paso la direccion
-
-    int 80h
-
-    pop rdx
-    pop rcx
-    pop rbx
-    ;pop rax
-
-    mov rsp, rbp
-    pop rbp
-    ret
-
-
-
 syscall_free:
     push rbp
     mov rbp, rsp
@@ -122,8 +41,6 @@ syscall_free:
     mov r8, rdi     ;le paso la direccion
 
     int 80h
-
-    
 
     pop rdx
     pop rcx
@@ -143,9 +60,9 @@ syscall_check_mem_state:
     push rdx
 
     mov rax, 7      ;ID para malloc
-    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
-    mov rcx, 1      ;idem
-    mov rdx, 1      ;Le paso el size
+    ;mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
+    ;mov rcx, 1      ;idem
+    ;mov rdx, 1      ;Le paso el size
     mov r8, rdi
 
     int 80h
@@ -184,9 +101,7 @@ syscall_malloc:
     mov rsp, rbp
     pop rbp
     ret
-
-;;MI IDEA ES QUE LA SYSCALL RETORNE EL VALOR QUE OBTUVO.
-;;sino vemos despues como hacemos
+;;;;;;;;;;;;;;;;;;;;;;;
 
 ;SYSCALLS READ Y WRITE
 syscall_write:
@@ -212,6 +127,29 @@ syscall_write:
     pop rbp
     ret
 
+syscall_read:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 3
+    mov rbx, rdi  ; le paso el file_descriptor
+    mov rcx, rsi  ; le paso la direccion de donde tiene que guardar lo leido
+    mov rdx, rdx  ; le paso la cantidad de caracteres que tiene que leer
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    mov rsp, rbp
+    pop rbp
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;SYSCALLS CORRESPONDIENTES AL SCHEDULER Y PROCESOS
 syscall_create_process:
@@ -412,29 +350,6 @@ syscall_set_priority:
     pop rcx
     pop rbx
     ; pop rax
-    mov rsp, rbp
-    pop rbp
-    ret
-
-syscall_read:
-    push rbp
-    mov rbp, rsp
-    push rax
-    push rbx
-    push rcx
-    push rdx
-
-    mov rax, 3
-    mov rbx, rdi  ; le paso el file_descriptor
-    mov rcx, rsi  ; le paso la direccion de donde tiene que guardar lo leido
-    mov rdx, rdx  ; le paso la cantidad de caracteres que tiene que leer
-    mov r8, 1
-    int 80h
-
-    pop rdx
-    pop rcx
-    pop rbx
-    pop rax
     mov rsp, rbp
     pop rbp
     ret

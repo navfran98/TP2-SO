@@ -30,6 +30,8 @@ uint64_t get_pid();
 
 uint64_t get_ppid();
 
+pcb * get_prev();
+
 uint64_t kill_process(uint64_t pid);
 
 void print_all();

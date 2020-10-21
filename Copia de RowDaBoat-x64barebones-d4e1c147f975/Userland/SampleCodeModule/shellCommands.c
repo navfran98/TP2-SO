@@ -1,7 +1,12 @@
 #include "stdio.h"
 #include "shellCommands.h"
+#include <string.h>
 #include <syscalls.h>
 #include <stdint.h>
+#include "test_processes.h"
+#include "test_prio.h"
+#include "test_sync.h"
+// #include "test_mm.h"
 
 char * descriptions[NUMBER_OF_COMMANDS] = 
 { 
@@ -16,7 +21,7 @@ char * descriptions[NUMBER_OF_COMMANDS] =
 "Imprime el estado de la memoria",
 "Muestra el estado de todos los procesos existentes",
 "Matar un proceso determinado a partir de su PID",
-"Cambiar la prioridad de un proceso a partir de su PID",
+"Modificar la prioridad de un procesos ingresando una nueva con valor entre 1 y 10",
 "Bloquear un proceso a partir de su PID",
 "Muestra el estado de todos los semaforos existentes",
 "Imprime el STDIN tal cual como lo recibe",
@@ -39,13 +44,16 @@ static void showTime();
 
 static void mem();
 static void ps();
+static void kill(char * s);
+static void block(char * s);
+static void nice(char * s, char * t);
 
 static void sem();
 
 extern void syscall_read(int, char*, int);
 extern void syscall_write(char*, int);
 
-void execute_command(int command, char* parameter) {
+void execute_command(int command, char * first_parameter, char * second_parameter) {
     switch(command){
         //Comandos de arquitectura
         case 0:{
@@ -65,7 +73,7 @@ void execute_command(int command, char* parameter) {
             break;
         }
         case 4:{
-            printmem(parameter);
+            printmem(first_parameter);
             break;
         }
         case 5:{
@@ -82,15 +90,15 @@ void execute_command(int command, char* parameter) {
             break;
         }
         case 8:{
-            //kill
+            kill(first_parameter);
             break;
         }
         case 9:{
-            //nice
+            nice(first_parameter, second_parameter);
             break;
         }
         case 10:{
-            //block
+            block(first_parameter);
             break;
         }
         case 11:{
@@ -109,27 +117,27 @@ void execute_command(int command, char* parameter) {
             //filter
             break;
         }
-        case 16:{
+        case 15:{
             //loop
             break;
         }
-        case 17:{
+        case 16:{
             test_prio();
             break;
         }
-        case 18:{
+        case 17:{
             test_processes();
             break;
         }
-        case 19:{
+        case 18:{
             test_mm();
             break;
         }
-        case 20:{
+        case 19:{
             test_sync();
             break;
         }
-        case 21:{
+        case 20:{
             test_no_sync();
             break;
         }
@@ -178,14 +186,29 @@ static void showTime() {
 
 //Comandos nuevos
 static void mem(){
-    syscall_buddy_check_mem_state();
+    syscall_check_mem_state();
 }
 
 static void ps(){
     syscall_ps();
 }
 
-static void kill(uint64_t pid){
+static void sem(){
+    print_all_semaphores();
+}
+
+static void kill(char * s){
+    int i=0;
+    while(s[i] != '\0'){
+        //print(s[i]);
+        if(!isNumber(s[i])){
+            print("Invalid argument.\n");
+            return;
+        }
+        i++;
+    }
+
+    int pid = string_to_num(s);
     if(pid < 0){
         print("Error: invalid PID\n");
         return;
@@ -202,7 +225,24 @@ static void kill(uint64_t pid){
 }
 
 //ver si hay q recibir con getchar la nueva priority
-static void nice(uint64_t pid, uint64_t priority){
+static void nice(char * s, char * t){
+    int i = 0, j=0;
+    while(s[i] != '\0'){
+        if(!isNumber(s[i])){
+            print("Invalid first argument.\n");
+            return;
+        }
+        i++;
+    }
+    while(t[j] != '\0'){
+        if(!isNumber(t[j])){
+            print("Invalid second argument.\n");
+            return;
+        }
+        j++;
+    }
+    int priority = string_to_num(t);
+    int pid = string_to_num(s);
     if(pid < 0){
         print("Error: invalid PID\n");
         return;
@@ -211,6 +251,7 @@ static void nice(uint64_t pid, uint64_t priority){
         print("Invalid PID: IDLE and Shell can't be modified\n");
         return;
     }
+    // uint64_t new_priority = string_to_num(input_priority());
     if(syscall_set_priority(pid, priority) == 0){
         print("Error while trying to set a new priority\n");
         return;
@@ -218,7 +259,17 @@ static void nice(uint64_t pid, uint64_t priority){
     print("Process priority successfully modified\n");
 }
 
-static void block(uint64_t pid){
+static void block(char * s){
+    int i=0;
+    while(s[i] != '\0'){
+        //print(s[i]);
+        if(!isNumber(s[i])){
+            print("Invalid argument.\n");
+            return;
+        }
+        i++;
+    }
+    int pid = string_to_num(s);
     if(pid < 0){
         print("Error: invalid PID\n");
         return;
@@ -232,10 +283,6 @@ static void block(uint64_t pid){
         return;
     }
     print("Process state successfully modified\n");
-}
-
-static void sem(){
-    print_all_semaphores();
 }
 
 // static void cat(){

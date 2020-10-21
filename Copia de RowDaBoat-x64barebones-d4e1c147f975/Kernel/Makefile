@@ -6,11 +6,26 @@ SOURCES_ASM=$(wildcard asm/*.asm)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
 LOADERSRC=loader.asm
+#MODO="./include/memMode.h"
 
 LOADEROBJECT=$(LOADERSRC:.asm=.o)
 STATICLIBS=
 
 all: $(KERNEL)
+
+#buddy: buddyAux $(KERNEL)
+
+#buddyAux:
+	#esto elimina la primer linea. En nuestro caso, el .h esta vacio, por lo que solo agregamos un define
+#	sed -i '1d' $(MODO) 
+#	echo '#define BUDDY' >> $(MODO)
+
+#freeList: freeListAux $(KERNEL)
+
+#freeListAux:
+#	sed -i '1d' $(MODO)
+#	echo '#define FREE' >> $(MODO)
+
 
 $(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM)
 	$(LD) $(LDFLAGS) -T kernel.ld -o $(KERNEL) $(LOADEROBJECT) $(OBJECTS) $(OBJECTS_ASM) $(STATICLIBS)

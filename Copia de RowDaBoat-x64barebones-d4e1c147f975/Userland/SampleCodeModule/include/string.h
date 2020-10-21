@@ -9,6 +9,8 @@ int strlen(char* string);
 
 int string_to_num(char* parameter);
 
+int isNumber(char c);
+
 void * memset(void * destiation, int32_t c, uint64_t length);
 
 #endif

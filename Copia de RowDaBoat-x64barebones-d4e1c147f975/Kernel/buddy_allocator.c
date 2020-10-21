@@ -47,7 +47,7 @@ void printTree(block * root);
 void printState(block* n);
 
 void generate_buddy_tree(void * base_mem, uint64_t total_mem){
-   
+   drawString("generating buddy tree...\n");
    // drawNumber(sizeof(block), 124124214, 32);
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
    
@@ -225,7 +225,7 @@ void buddy_free(void * ptr){
    }
    while(node->state != OCCUPIED){
       if(node->left == NULL){
-         drawString("\nLlegue al final y no encontre nada\n");
+         //drawString("\nLlegue al final y no encontre nada\n");
          return;
       }
       node = node->left;
@@ -236,15 +236,12 @@ void buddy_free(void * ptr){
    tree->used_mem -= SIZE_OF_BLOCKS_AT_LEVEL(node->level,tree->total_mem);
    free_children(node);
    update_states(node);
-   // drawString("\nHago free de: ");
-   // drawNumber(node->starting_address, 0xFFFFFF, 0x000000);
+   drawString("\nHago free de: ");
+   drawNumber(node->starting_address, 0xFFFFFF, 0x000000);
 }
 
 void buddy_check_mem_state(){
    buddy_list_header * tree = (buddy_list_header *) tree_base_address;
-   // state[0] = tree->total_mem;
-   // state[1] = tree->free_mem;
-   // state[2] = tree->used_mem;
 
    drawString("Total mem: ");
    drawNumber(tree->total_mem, 0xFFFFFF, 0x000000);

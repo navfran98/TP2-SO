@@ -10,7 +10,7 @@
 #define SHELL_BUFFER_SIZE (128)+(128/2)  // 1 linea y media
 
 static void shell_main();
-static int search_command(char command_with_possible_parameter[], char* parameter);
+static int search_command(char command_with_possible_parameter[], char * first_parameter, char * second_parameter);
 
 static char shell_buffer[SHELL_BUFFER_SIZE] = {'\0'};
 static uint8_t k = 0; // to move across the buffer
@@ -27,16 +27,22 @@ void nava(){
 void start_shell() {
 
     print(">>");
-    test_sync();
+    //test_mm();
 
-    // test_mm();
-    // test_processes();
+    //test_mm();
+    //test_processes();
     // test_prio();
-
+    // test_no_sync();
     //funciona poniendo 1=BACK y 0=FORE
-    //syscall_create_process("NAVA", &nava, 3, 0);
     //uint64_t a = syscall_get_pid();
-
+    // int i=0;
+    // while(i<5){
+        // test_no_sync();
+    // syscall_create_process("NAVA", &nava, 3, 0);
+    // syscall_create_process("NAVA2", &nava, 3, 0);
+        // syscall_create_process("Shell", &shell_main, 5,0);
+    //     i++;
+    // }
     //CON ESTO SE VE Q ITERA BIEN SALTEANDOSE AL IDLE
     //PROBLEMAS AL LLAMAR CALL_SCHEDULER ----->SOLUCIONAR IMPORTANTE
     // syscall_ps();
@@ -56,6 +62,7 @@ void start_shell() {
 
 
 static void shell_main() {
+    print("SHELL MAIN\n");
     char c;
     int command;
     while(1) {
@@ -64,10 +71,11 @@ static void shell_main() {
             if(c == '\n') {
                 putchar(c);     // print the '\n' to move to the next line
                 shell_buffer[k++] = '\0';
-                char* parameter = "X";
-                command = search_command(shell_buffer, parameter);
+                char * first_parameter = "X";
+                char * second_parameter = "Y";
+                command = search_command(shell_buffer, first_parameter, second_parameter);
                 if(command != -1)
-                    execute_command(command, parameter);
+                    execute_command(command, first_parameter, second_parameter);
                 else
                     print("   Command not found");
                 putchar(c);  // print the '\n' to move to the next line
@@ -92,7 +100,7 @@ static void shell_main() {
     }
 }
 
-static int search_command(char command_with_possible_parameter[], char* parameter) {
+static int search_command(char command_with_possible_parameter[], char * first_parameter, char * second_parameter) {
     
     int number_of_command = -1;
     char command_without_parameter[SHELL_BUFFER_SIZE] = {'\0'};
@@ -115,15 +123,25 @@ static int search_command(char command_with_possible_parameter[], char* paramete
         return -1;
     }
 
+
     if(command_with_possible_parameter[i] == ' ') {
         // there is also a parameter next to the command
-        uint8_t j2=0;
-        for(uint8_t j1=i+1; command_with_possible_parameter[j1]!='\0'; j1++) {
-            if(command_with_possible_parameter[j1] != ' ') {  // quizas entre command y parameter hay muchos espacios
-                parameter[j2++] = command_with_possible_parameter[j1];
-            }
+        uint8_t j2=0,j3=0;
+        i++;
+        for(i; command_with_possible_parameter[i]!='\0' && command_with_possible_parameter[i] != ' ';  i++) {
+            first_parameter[j2++] = command_with_possible_parameter[i];
         }
-        parameter[j2++] = '\0';
+        first_parameter[j2++] = '\0';
+     
+        if(command_with_possible_parameter[i] == ' '){
+            i++; //space encontrado
+            for(i; command_with_possible_parameter[i]!='\0'; i++) {
+                second_parameter[j3++] = command_with_possible_parameter[i];
+            }
+            second_parameter[j3++] = '\0';
+        }
+  
     }
+
     return number_of_command;
 }

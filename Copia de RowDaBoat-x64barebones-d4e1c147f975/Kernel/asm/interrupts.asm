@@ -180,6 +180,7 @@ _systemCallsHandler:
 _irq00Handler:
 	;irqHandlerMaster 0
 	; schedulerHandler 0
+	;cli
 	pushState;;,
 
 	mov rdi, rsp ;scheduler recibe como parametro el sp ytho
@@ -190,6 +191,8 @@ _irq00Handler:
 	out 20h, al
 
 	popState
+	;sti
+	
 
 	iretq
 

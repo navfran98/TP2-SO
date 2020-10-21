@@ -6,6 +6,8 @@
 #include <interrupts.h>
 #include <screen_driver.h>
 
+#include <memoryManager.h>
+
 #define NULL (void *) 0
 #define LOWEST_PRIO 1
 #define HIGHEST_PRIO 10
@@ -28,13 +30,25 @@ uint64_t scheduler(uint64_t stack_pointer){
         if(current->state == EXECUTING){
             current->state = READY;
         }
+        if(current->state == KILLED){
+            pcb * current_prev = get_prev();
+            current_prev->next = current->next;
+            pcb * aux = current;
+            if(current == last){
+            last = current_prev;
+            current = first;
+            } else{
+            current = current_prev;
+            }
+            free_process(aux);
+        }
         pcb * aux = get_next();
         current = aux;
         current->state = EXECUTING;
         counter = 0;
         // drawString("Running: ");
         // drawString(current->name);
-        //drawString("\n");
+        // drawString("\n");
         return current->sp;
     }
     return current->sp;
@@ -45,16 +59,15 @@ pcb * get_next(){
         return idle_process; 
     }
 
-    //printListt();
     pcb * aux = current->next;
     if(aux == NULL){
         aux = first->next;
     }
-    // IDLE -> SHELL -> NULL
+    
     while(aux->state != READY && aux->pid != current->pid){
         aux = aux->next;
         if(aux == NULL){
-            if(first == current){
+            if(first == current){ //para poder ver si se dio la vuelta completa, con idle como current
                 aux = first;
             }
             else{
@@ -77,19 +90,21 @@ void idle(){
 }
 
 void init_scheduler(){
-    //generate idle ... 
     idle_process = generate_process("IDLE", &idle, LOWEST_PRIO, BACK);
-    drawString("Generating scheduler...\n");
+    // drawString("Generating scheduler...\n");
     current = idle_process;
     first = idle_process;
     last = first;
 }
 
+void add_process(pcb * process){
+    last->next = process;
+    last = last->next;
+}
+
 void force_new_selection(){
-   
     counter = current->priority + 1;
     call_scheduler();
-    // scheduler(current->sp);
 }
 
 state get_pcb_state(uint64_t pid){
@@ -100,7 +115,6 @@ state get_pcb_state(uint64_t pid){
     return aux->state;
 }
 
-//cambia a usar dos funciones para llamar una desde syscalss solo con el pid
 uint64_t change_state(uint64_t pid){
     state aux = get_pcb_state(pid);
     if(aux == READY){
@@ -151,36 +165,57 @@ uint64_t get_ppid(){
 }
 
 pcb * get_prev(){
+
+    if(current->pid == first->pid){ //se supone que nunca entra acá porque se supone que IDLE no se puede morir.
+        return last;
+    }
+
     pcb * aux = first;
+
     while(aux->next->pid != current->pid){
         aux = aux->next;
     }
+ 
     return aux;
 }
 
 //retorna 0 si no pudo y 1 si tuvo exito
+   
+
 uint64_t kill_process(uint64_t pid){
     if(current->pid == pid){
-        pcb * current_prev = get_prev();
-        current_prev->next = current->next;
-        buddy_free(current);
-        if(current == last){
-            last = current_prev;
-            current = first;
-        } else{
-            current = current->next;
-        }
-        call_scheduler();
+
+        current->state = KILLED;
+        force_new_selection();
+
+        // pcb * current_prev = get_prev();
+
+        // current_prev->next = current->next;
+
+        // pcb * aux = current;
+
+        // if(current == last){
+        //     last = current_prev;
+        //     current = first;
+        // } else{
+        //     current = current_prev;
+        // }
+        // free_process(aux);
+        // //print_all();
+        // //drawString("Process terminated\n");
         return 1;
     }
+
     pcb * aux = first;
     pcb * aux_prev = aux;
-
     while(aux != NULL && aux->pid != pid){
+        drawNumber(aux->pid);
+        drawString(" ");
         aux_prev = aux;
         aux = aux->next;
     }
     if(aux == NULL){
+        
         return 0; //no lo encontré. 
     }
     if(aux == first){
@@ -193,31 +228,11 @@ uint64_t kill_process(uint64_t pid){
     else{
         aux_prev->next = aux->next;
     }
-    buddy_free(aux);
+    free_process(aux);
+    drawString("Process terminated\n");
     return 1;
     
 }
-
-// //sacarla y cambiarla por block
-// void toggle_block(uint64_t pid){
-//     pcb * aux = get_pcb(pid);
-
-//     if(aux == NULL){ //mal pasado el pid
-//         return;
-//     }
-
-//     if(aux->state == BLOCKED){
-//         aux->state = READY;
-//         return;
-//     }
-
-//     if(aux->state == EXECUTING){
-//         aux->state = BLOCKED;
-//         call_scheduler();
-//         //busco nuevo proceso a ejecutar
-//     }
-//     aux->state = BLOCKED;
-// }
 
 uint64_t block(uint64_t pid){
     pcb * aux = get_pcb(pid);
@@ -265,11 +280,6 @@ pcb * get_pcb(uint64_t pid){
         }
     }
     return NULL;
-}
-
-void add_process(pcb * process){
-    last->next = process;
-    last = last->next;
 }
 
 void print_all(){

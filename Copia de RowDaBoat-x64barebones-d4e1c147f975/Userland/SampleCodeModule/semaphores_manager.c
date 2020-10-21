@@ -8,12 +8,12 @@ uint16_t sem_count = 0;
 extern char* num_to_string(int num);
 //
 sem * create_sem(int value){
-    sem * new_sem = (sem *) syscall_buddy_malloc(sizeof(sem));
+    sem * new_sem = (sem *) syscall_malloc(sizeof(sem));
     new_sem->value = value;
     new_sem->sem_id = sem_count++;
     new_sem->lock = 0;
     new_sem->next = NULL;
-    list_header * pid_list = syscall_buddy_malloc(sizeof(list_header));
+    list_header * pid_list = syscall_malloc(sizeof(list_header));
     pid_list->first = pid_list->last = NULL;
     new_sem->blocked_pid_list = pid_list;
     if(first == NULL){
@@ -59,8 +59,8 @@ int kill_sem(uint64_t sem_id){
         node = node->next;
     }
 
-    syscall_buddy_free(aux->blocked_pid_list);
-    syscall_buddy_free(aux);
+    syscall_free(aux->blocked_pid_list);
+    syscall_free(aux);
     return 1;
 }
 
@@ -97,7 +97,7 @@ void sem_wait(sem * s, uint64_t pid){
                 print("Error bloqueando proceso en el sem_wait\n");
                 return;
             }
-            list_node * node = syscall_buddy_malloc(sizeof(list_node));
+            list_node * node = syscall_malloc(sizeof(list_node));
             node->pid = pid;
             node->next = NULL;
             if(s->blocked_pid_list->first == NULL){
@@ -132,7 +132,7 @@ void sem_post(sem * s, uint64_t pid){
             release(&(s->lock));
             return;
         }
-        syscall_buddy_free(aux);
+        syscall_free(aux);
     } 
     release(&(s->lock));
 }

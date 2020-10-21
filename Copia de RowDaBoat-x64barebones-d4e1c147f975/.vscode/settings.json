@@ -8,6 +8,7 @@
         "stdio.h": "c",
         "type_traits": "c",
         "mm.h": "c",
-        "syscalls.h": "c"
+        "syscalls.h": "c",
+        "buddy_allocator.h": "c"
     }
 }

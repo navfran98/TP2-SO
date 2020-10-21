@@ -38,6 +38,12 @@ int string_to_num(char* parameter) {
     return result;
 }
 
+int isNumber(char c){
+    if(c >= '0' && c <= '9' ){
+        return 1;
+    }
+    return 0;
+}
 
 void * memset(void * destiation, int32_t c, uint64_t length) {
 	uint8_t chr = (uint8_t)c;

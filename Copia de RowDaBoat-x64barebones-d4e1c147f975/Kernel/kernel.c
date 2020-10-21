@@ -10,7 +10,7 @@
 // lo mismo para con este. Hay que sacar este include solamente si la funcion de initializeKernelBinary
 // ya no me sirve (para mi siempre hay que dejarla esta funcion)
 #include <moduleLoader.h>
-
+#include <memoryManager.h>
 #include <idtLoader.h>     // ya que necesita a load_idt
 #include <buddy_allocator.h>
 
@@ -59,8 +59,11 @@ void * initializeKernelBinary() {
 
 	clearBSS(&bss, &endOfKernel - &bss);
 
-	generate_buddy_tree(base_mem, total_mem);
+	//generate_buddy_tree(base_mem, total_mem);
 	//free_list_init(base_mem, total_mem); 
+
+	init_mm(base_mem, total_mem);
+
 	init_VM_Driver();
 	init_scheduler();
 	
