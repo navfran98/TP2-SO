@@ -1,3 +1,4 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
 #include <stdint.h>
 #include <string.h>
 #include <syscalls.h>

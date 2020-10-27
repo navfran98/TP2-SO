@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
 #include <lib.h>
 #include <scheduler.h>
@@ -5,7 +7,7 @@
 #include <interrupts.h>
 #include <screen_driver.h>
 #include <memoryManager.h>
-#include <stack.h>
+
 
 #define NULL (void *) 0
 #define LOWEST_PRIO 1

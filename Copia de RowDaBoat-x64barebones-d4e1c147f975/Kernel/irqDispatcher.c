@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <time.h>   // ya que necesita la funcion timer_handler()
 #include <keyboard.h>  // ya que necesita la funcion keyboard_handler()
 #include <stdint.h>

@@ -1,9 +1,11 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <screen_driver.h> 
 #include <buddy_allocator.h>
 #include <stdint.h>
 #include <lib.h>
 
-void occupy_children(block * block);
+void occupy_children(block * block); 
 void free_children(block * block);
 void update_states(block * node);
 uint64_t _generate_children(block * parent, buddy_list_header buddy_tree, uint64_t i);
@@ -12,6 +14,9 @@ void * _alloc(uint8_t level, block*node);
 void printTabs(int level);
 void printTree(block * root);
 void printState(block* n);
+
+static uint64_t * block_base_address = (uint64_t *) (0x900000);
+static uint64_t * tree_base_address = (uint64_t *) TREE_ADDRESS;
 
 void generate_buddy_tree(void * base_mem, uint64_t total_mem){
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
@@ -32,7 +37,6 @@ void generate_buddy_tree(void * base_mem, uint64_t total_mem){
 
    _generate_children(buddy_tree->root, *buddy_tree,3);
    block * aux = (block*) block_base_address;
-   aux = (block*) block_base_address;
    buddy_tree->root = aux;
 }
 

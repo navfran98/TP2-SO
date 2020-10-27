@@ -8,8 +8,7 @@
    (((pointer)-(memory_start)) / (SIZE_OF_BLOCKS_AT_LEVEL(lvl, total_size)))
 #define TREE_ADDRESS ((void *) 0x0000000000050000L)
 
-static uint64_t * block_base_address = (uint64_t *) (0x900000);
-static uint64_t * tree_base_address = (uint64_t *) TREE_ADDRESS;
+
 enum state {OCCUPIED, FREE, PARTIALLY_OCCUPIED};
 
 typedef struct Tlevel{

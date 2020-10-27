@@ -1,10 +1,12 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <syscalls.h>
 #include <shellCommands.h>
 #include <test_processes.h>
-
+#include <test_prio.h>
 #include <test_sync.h>
 #include <test_mm.h>
 #include <pipes_manager.h>
@@ -308,34 +310,45 @@ static void cat(){
 }
 
 static void wc(){
-    char * s = syscall_malloc(MAX_SIZE_READ);
-    read_pipe(syscall_get_pipe_id(), s);
-    int lines = 0;
-    for(int i=0; s[i] != 0; i++){
-        if(s[i] == '\n'){
-            lines++;
+    uint64_t id = syscall_get_pipe_id();
+    if(id == 0){
+        print("WC esta implemetado para ejecutar solo como cat | wc\n");
+        syscall_kill(syscall_get_pid());
+    }else{
+        char * s = syscall_malloc(MAX_SIZE_READ);
+        read_pipe(id, s);
+        int lines = 0;
+        for(int i=0; s[i] != 0; i++){
+            if(s[i] == '\n'){
+                lines++;
+            }
         }
+        syscall_free(s);
+        print("El numero de lineas del input es: ");
+        print(num_to_string(lines));
+        print("\n");
+        unblock_pipe_partner(syscall_get_pipe_id());
+        syscall_kill(syscall_get_pid());
     }
-    syscall_free(s);
-    print("El numero de lineas del input es: ");
-    print(num_to_string(lines));
-    print("\n");
-    unblock_pipe_partner(syscall_get_pipe_id());
-    syscall_kill(syscall_get_pid());
 }
 
 static void filter(){
-    // char * s = read_pipe(syscall_get_pipe_id());
-    char * s = syscall_malloc(MAX_SIZE_READ);
-    read_pipe(syscall_get_pipe_id(), s);
-    for(int i = 0; s[i] != '\0'; i++){
-        if(!is_vocal(s[i])){
-            putchar(s[i]);
+    uint64_t id = syscall_get_pipe_id();
+    if(id == 0){
+        print("FILTER esta implemetado para ejecutar solo como cat | filter\n");
+        syscall_kill(syscall_get_pid());
+    }else{
+        char * s = syscall_malloc(MAX_SIZE_READ);
+        read_pipe(syscall_get_pipe_id(), s);
+        for(int i = 0; s[i] != '\0'; i++){
+            if(!is_vocal(s[i])){
+                putchar(s[i]);
+            }
         }
+        syscall_free(s);
+        unblock_pipe_partner(syscall_get_pipe_id());
+        syscall_kill(syscall_get_pid());
     }
-    syscall_free(s);
-    unblock_pipe_partner(syscall_get_pipe_id());
-    syscall_kill(syscall_get_pid());
 }
 
 static void loop(){

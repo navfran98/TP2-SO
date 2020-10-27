@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 //Comentado porque el endless_loop se repite en otro test
 #include <stdint.h>
 #include <stdio.h>

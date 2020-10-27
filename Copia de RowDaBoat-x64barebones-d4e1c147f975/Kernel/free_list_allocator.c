@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <screen_driver.h> 
 #include <free_list_allocator.h>
 #include <stdint.h>
@@ -96,7 +98,7 @@ void * free_list_malloc(uint64_t bytes_to_alloc){
 
 void free_list_free(void * ptr){
 
-	void * aux_ptr = ptr - sizeof(slot);
+	void * aux_ptr = (void *) ptr - sizeof(slot);
 	slot * used_iterator = mem.used;
 	
 	//search the node we have to include in the freelist

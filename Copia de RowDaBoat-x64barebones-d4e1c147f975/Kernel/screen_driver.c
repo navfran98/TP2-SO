@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <lib.h>    // ya que necesita a mi strlen
 #include <font.h>   // ya que necesita a CHR_HGTH y a CHR_WDTH
 #include <video_driver.h>  // ya que necesita el drawPixel, el clearVideoDisplay
