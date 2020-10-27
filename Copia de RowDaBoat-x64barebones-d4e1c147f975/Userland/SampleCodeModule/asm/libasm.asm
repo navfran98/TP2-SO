@@ -18,6 +18,7 @@ GLOBAL syscall_change_state
 GLOBAL syscall_set_priority
 GLOBAL syscall_block
 GLOBAL syscall_unblock
+GLOBAL syscall_get_pipe_id
 
 section .bss
     numstr resb 10  ; used by num_to_string function 
@@ -165,7 +166,7 @@ syscall_create_process:
     mov r9, rcx
     mov rcx, 1
     mov r8, rdx
-    mov rdx, rsi ; le paso la longitud del string
+    mov rdx, rsi
 
 
     int 80h
@@ -206,6 +207,24 @@ syscall_get_pid:
     push rdx
 
     mov rax, 11
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_get_pipe_id:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 21
     int 80h
 
     pop rdx

@@ -9,6 +9,14 @@
         "type_traits": "c",
         "mm.h": "c",
         "syscalls.h": "c",
-        "buddy_allocator.h": "c"
+        "buddy_allocator.h": "c",
+        "shellcommands.h": "c",
+        "process.h": "c",
+        "memorymanager.h": "c",
+        "stack.h": "c",
+        "interrupts.h": "c",
+        "time.h": "c",
+        "scheduler.h": "c",
+        "semaphores_manager.h": "c"
     }
 }

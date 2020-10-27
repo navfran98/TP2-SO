@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <syscalls.h>
 
 #define NULL ((void *) 0)
 
@@ -22,11 +21,14 @@ typedef struct semaphore {
     struct semaphore * next;
 } sem;
 
+extern uint64_t _xchg(int * lock, int n);
+//
+void release(int * lock);
+void acquire(int * lock);
 //
 sem * create_sem(int value);
 int kill_sem(uint64_t sem_id);
 void sem_wait(sem * s, uint64_t pid);
 void sem_post(sem * s, uint64_t pid);
 void print_all_semaphores();
-
-extern uint64_t _xchg(int * lock, int n); //
+//

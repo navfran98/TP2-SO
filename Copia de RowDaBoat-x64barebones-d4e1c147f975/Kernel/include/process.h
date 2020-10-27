@@ -10,6 +10,8 @@ typedef struct process_data{
     uint64_t priority;
     uint64_t sp;
     uint64_t bp;
+    uint64_t pipe_id;
+
     void * stack;
 
     state state;
@@ -20,5 +22,6 @@ typedef struct process_data{
 }pcb; 
 
 
-pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type type);
-uint64_t create_process(char * name, void * rip, uint64_t priority,  process_type type);
+pcb * generate_process(char * name, void * rip, uint64_t pipe_id,  process_type type);
+uint64_t create_process(char * name, void * rip, uint64_t pipe_id,  process_type type);
+void free_process(pcb * p);

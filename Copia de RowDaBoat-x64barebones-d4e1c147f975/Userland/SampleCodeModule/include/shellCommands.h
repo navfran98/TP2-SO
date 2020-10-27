@@ -1,14 +1,9 @@
-#include <test_prio.h>
-#include <test_processes.h>
-#include <test_util.h>
-#include <test_sync.h>
-
 #ifndef SHELL_COMMANDS_H
 #define SHELL_COMMANDS_H
 
-#define NUMBER_OF_COMMANDS 21
+#define NUMBER_OF_COMMANDS 22
 
-void execute_command(int command, char * first_parameter, char * second_parameter);
+void execute_command(int cmds[2], char * first_parameter, char * second_parameter, int n, int cmds_ground[2]);
 
 static char* all_commands[] = 
 {//comandos de arquitectura
@@ -29,11 +24,12 @@ static char* all_commands[] =
 "wc",
 "filter",
 "loop",
+"pipes",
 "test_prio",
 "test_processes",
 "test_mm",
 "test_sync",
-"test_no_sync",
+"test_no_sync"
 };
 
 #endif

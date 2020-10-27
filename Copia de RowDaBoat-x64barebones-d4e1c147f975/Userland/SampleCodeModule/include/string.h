@@ -1,7 +1,8 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <syscalls.h>
+#include <stdint.h>
+
 
 int strcmp (const char *p1, const char *p2);
 
@@ -11,6 +12,6 @@ int string_to_num(char* parameter);
 
 int isNumber(char c);
 
-void * memset(void * destiation, int32_t c, uint64_t length);
+void * memset(void * destiation, uint32_t c, uint64_t length);
 
 #endif

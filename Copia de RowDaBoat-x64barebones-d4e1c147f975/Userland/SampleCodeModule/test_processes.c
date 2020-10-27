@@ -30,15 +30,12 @@ void test_processes(){
     // Create MAX_PROCESSES processes
     print("Creating processes...\n");
     for(rq = 0; rq < MAX_PROCESSES; rq++){
-      p_rqs[rq].pid = syscall_create_process("endless_loop", &endless_loop, 2, 0);  // TODO: Port this call as required
+      p_rqs[rq].pid = syscall_create_process("endless_loop", &endless_loop, -1, 0);  // TODO: Port this call as required
 
       if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
         print("Error creating process\n");               // TODO: Port this as required
         return;
       }else{
-        // print("Creating process with pid: ");
-        // print(num_to_string(p_rqs[rq].pid));
-        // print("\n");
         p_rqs[rq].state = RUNNING;
         alive++;
       }

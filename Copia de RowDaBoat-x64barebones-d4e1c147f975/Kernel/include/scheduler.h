@@ -1,14 +1,6 @@
-#include <process.h>
-#include <stack.h>
 #include <stdint.h>
+#include <process.h>
 
-typedef struct scheduler_list{
-    pcb * first;
-    pcb * last;
-    //podemos agregar las cosas que necesitamos a esto.
-} schlist; 
-
-static pcb * first;
 
 pcb * get_next(); 
 
@@ -36,7 +28,11 @@ uint64_t kill_process(uint64_t pid);
 
 void print_all();
 
-void toggle_block(uint64_t pid);
+uint64_t unblock(uint64_t pid);
+
+uint64_t block(uint64_t pid);
+
+uint64_t get_pipe_id();
 
 pcb * get_pcb(uint64_t pid);
 

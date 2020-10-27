@@ -6,8 +6,9 @@
 #include <scheduler.h>
 #include <interrupts.h>
 #include <lib.h>
-#include <buddy_allocator.h>
 #include <memoryManager.h>
+
+
 #define STD_INTPUT 0
 #define STD_OUTPUT 1
 #define RTC 3
@@ -25,6 +26,7 @@
 #define HALT 18
 #define BLOCK 19
 #define UNBLOCK 20
+#define GET_PIPE_ID 21
 
 
 //CAMBIAR NOMBRES DE LOS PARAMETROS POR NOMBRES GENERALES PARA NO CONFUNDIR
@@ -32,7 +34,7 @@ extern int segundos();
 extern int minutos();
 extern int horas();
 //cambiar todos los tipos por uint64_t
-            //rdi         rsi                rdx            rcx          r8         r9
+                        //rdi         rsi           rdx          rcx          r8               r9 
 void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) { 
     switch(ID){
         //estas 3 dsp van a llamar a la funcion free, malloc y state: y luego se corre la de freelist o la de buddy segun sea el caso
@@ -47,18 +49,18 @@ void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint6
         }
 
         case MALLOC:{ 
-            return (void *) my_malloc(arg4); 
+            my_malloc(arg4); 
             break;
         }
 
 
         case GET_PID:{
-            return get_pid();
+            get_pid();
             break;
         }
 
         case KILL_PROCESS:{
-            return kill_process(arg2);
+            kill_process(arg2);
             break;
         }
 
@@ -78,7 +80,7 @@ void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint6
         }
 
         case SET_STATE_PROCESS:{
-            return change_state(arg2);
+            change_state(arg2);
             break;
         }
 
@@ -93,12 +95,17 @@ void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint6
         }
 
         case BLOCK: {
-            return block(arg2);
+            block(arg2);
             break;
         }
 
         case UNBLOCK: {
-            return unblock(arg2);
+            unblock(arg2);
+            break;
+        }
+
+        case GET_PIPE_ID:{
+            get_pipe_id();
             break;
         }
 

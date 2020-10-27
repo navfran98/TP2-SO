@@ -47,8 +47,6 @@ void printTree(block * root);
 void printState(block* n);
 
 void generate_buddy_tree(void * base_mem, uint64_t total_mem){
-   drawString("generating buddy tree...\n");
-   // drawNumber(sizeof(block), 124124214, 32);
    buddy_list_header * buddy_tree = (buddy_list_header *) tree_base_address;
    
    buddy_tree->base_mem = (uint64_t*)base_mem;
@@ -65,7 +63,7 @@ void generate_buddy_tree(void * base_mem, uint64_t total_mem){
    buddy_tree->root->right = (block*) block_base_address + 2;
    buddy_tree->root->starting_address = base_mem; 
 
-   int i = _generate_children(buddy_tree->root, *buddy_tree,3);
+   _generate_children(buddy_tree->root, *buddy_tree,3);
    block * aux = (block*) block_base_address;
    aux = (block*) block_base_address;
    buddy_tree->root = aux;
@@ -236,8 +234,6 @@ void buddy_free(void * ptr){
    tree->used_mem -= SIZE_OF_BLOCKS_AT_LEVEL(node->level,tree->total_mem);
    free_children(node);
    update_states(node);
-   drawString("\nHago free de: ");
-   drawNumber(node->starting_address, 0xFFFFFF, 0x000000);
 }
 
 void buddy_check_mem_state(){

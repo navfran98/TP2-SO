@@ -1,18 +1,15 @@
 #include <stdint.h>
 #include <lib.h>
 #include <scheduler.h>
-#include <buddy_allocator.h>
 #include <time.h> 
 #include <interrupts.h>
 #include <screen_driver.h>
-
 #include <memoryManager.h>
+#include <stack.h>
 
 #define NULL (void *) 0
 #define LOWEST_PRIO 1
 #define HIGHEST_PRIO 10
-
-#define QUANTUM 100
 
 static pcb * current; 
 static pcb * idle_process;
@@ -90,7 +87,7 @@ void idle(){
 }
 
 void init_scheduler(){
-    idle_process = generate_process("IDLE", &idle, LOWEST_PRIO, BACK);
+    idle_process = generate_process("IDLE", &idle, 0, BACK);
     // drawString("Generating scheduler...\n");
     current = idle_process;
     first = idle_process;
@@ -152,17 +149,25 @@ uint64_t set_priority(uint64_t pid, uint64_t new_priority){
 
 uint64_t get_pid(){
     if(current == NULL){
-        return NULL;
+        return -1;
     }
     return current->pid;
 }
 
 uint64_t get_ppid(){
     if(current == NULL){
-        return 0;
+        return -1;
     }
     return current->ppid;
 }
+
+uint64_t get_pipe_id(){
+    if(current == NULL){
+        return 0;
+    }
+    return current->pipe_id;
+}
+
 
 pcb * get_prev(){
 
@@ -177,40 +182,18 @@ pcb * get_prev(){
     }
  
     return aux;
-}
-
-//retorna 0 si no pudo y 1 si tuvo exito
-   
+}   
 
 uint64_t kill_process(uint64_t pid){
     if(current->pid == pid){
-
         current->state = KILLED;
         force_new_selection();
-
-        // pcb * current_prev = get_prev();
-
-        // current_prev->next = current->next;
-
-        // pcb * aux = current;
-
-        // if(current == last){
-        //     last = current_prev;
-        //     current = first;
-        // } else{
-        //     current = current_prev;
-        // }
-        // free_process(aux);
-        // //print_all();
-        // //drawString("Process terminated\n");
         return 1;
     }
 
     pcb * aux = first;
     pcb * aux_prev = aux;
     while(aux != NULL && aux->pid != pid){
-        drawNumber(aux->pid);
-        drawString(" ");
         aux_prev = aux;
         aux = aux->next;
     }

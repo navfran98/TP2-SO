@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "test_util.h"
+#include <test_util.h>
 #include <syscalls.h>
 
 //si pongo 10 y 1024 nomas, funka..................... O.o
@@ -36,10 +36,7 @@ void test_mm(){
       total += mm_rqs[rq].size;
       rq++;
     }
-    print("Blocks generated: ");
-    print(num_to_string(rq));
-    print("\n");
-  
+
     // Set
      print("Set\n");
     uint32_t i;

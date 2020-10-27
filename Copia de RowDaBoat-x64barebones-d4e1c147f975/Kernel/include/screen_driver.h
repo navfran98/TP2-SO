@@ -8,7 +8,7 @@ void drawNumberInSpecificSpot(int x, int y, int number, int fontColor, int backg
 // hace falta que este drawChar este aca????
 void drawChar(char character, int fontColor, int backgroundColor);
 void drawString(char* string);
-
+void drawNumber(int number, int fontColor, int backgroundColor);
 void init_screen_driver(unsigned int screen_width, unsigned int screen_height);
 
 #endif

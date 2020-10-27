@@ -76,11 +76,10 @@ void test_sync(){
   print("CREATING PROCESSES...(WITH SEM)\n");
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
-    int pid1, pid2;
     print("Creating process...\n");
-    pid1 = syscall_create_process("inc_sem", &inc_sem, 5, 0);
+    syscall_create_process("inc_sem", &inc_sem, -1, 0);
     print("Creating process...\n");
-    pid2 = syscall_create_process("dec_sem", &dec_sem, 3, 0);
+    syscall_create_process("dec_sem", &dec_sem, -1, 0);
   }
 }
 
@@ -113,7 +112,7 @@ void dec_no_sem(){
   syscall_kill(syscall_get_pid());
 }
 
-test_no_sync(){
+void test_no_sync(){
   uint64_t i;
 
   global = 0;
@@ -122,9 +121,9 @@ test_no_sync(){
 
   for(i = 0; i < TOTAL_PAIR_PROCESSES; i++){
     print("Creating process...\n");
-    syscall_create_process("inc_no_sem", &inc_no_sem, 3, 0);
+    syscall_create_process("inc_no_sem", &inc_no_sem, -1, 0);
     print("Creating process...\n");
-    syscall_create_process("dec_no_sem", &dec_no_sem, 3, 0);
+    syscall_create_process("dec_no_sem", &dec_no_sem, -1, 0);
   }
 }
 

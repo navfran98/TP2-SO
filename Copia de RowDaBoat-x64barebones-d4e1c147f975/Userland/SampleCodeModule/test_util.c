@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "test_util.h"
+#include <test_util.h>
 
 static uint32_t m_z = 362436069;
 static uint32_t m_w = 521288629;

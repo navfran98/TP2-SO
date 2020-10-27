@@ -1,6 +1,6 @@
 #include <stdint.h>
-#include <process.h>
 #include <lib.h>
+#include <scheduler.h>
 #include <memoryManager.h>
 
 
@@ -9,7 +9,7 @@
 
 uint64_t process_count = 0;
 //ACORDARNOS REVISAR COMENTARIOS DEL INIT_STACK
-pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type type){
+pcb * generate_process(char * name, void * rip, uint64_t pipe_id,  process_type type){
 
     void * stack_ptr = my_malloc(SIZE_OF_STACK);
     if(stack_ptr == NULL){
@@ -23,14 +23,19 @@ pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type
         return NULL;
     }
     to_ret->name = name;
-    to_ret->bp = init_stack(start_address, rip);
+    to_ret->bp = init_stack(start_address, (uint64_t) rip);
     to_ret->sp = to_ret->bp;
     to_ret->stack = stack_ptr;
     to_ret->state = 1;
     to_ret->type = type;
-    to_ret->priority = priority;
+    if(strcmp(name, "SHELL") == 0){
+        to_ret->priority = 5;
+    }else{
+        to_ret->priority = 1;
+    }
     to_ret->pid = process_count;
     to_ret->ppid = get_pid(); 
+    to_ret->pipe_id = pipe_id; //id of pipe associated with the process
     to_ret->next = NULL;
 
     process_count++;
@@ -38,8 +43,8 @@ pcb * generate_process(char * name, void * rip, uint64_t priority,  process_type
     return to_ret;
 }
 
-uint64_t create_process(char * name, void * rip, uint64_t priority,  process_type type){
-    pcb * pcb = generate_process(name, rip, priority, type);
+uint64_t create_process(char * name, void * rip, uint64_t pipe_id,  process_type type){
+    pcb * pcb = generate_process(name, rip, pipe_id, type);
     if(pcb == NULL){
         return -1;
     }

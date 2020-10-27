@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <string.h>
+#include <syscalls.h>
 #include <semaphores_manager.h>
 #include <stdio.h>
 
@@ -137,20 +139,20 @@ void sem_post(sem * s, uint64_t pid){
     release(&(s->lock));
 }
 
+
 void print_all_semaphores(){
     //hacer una funcion como el print_all de scheduler
     if(first == NULL){
         print("There isn't a single semaphore\n");
         return;
     }
-    sem * s = first;
     print("Sem_id      Value      Lock      Processes Blocked\n");
-    for(;s != NULL; s = s->next){
-        print(num_to_string(s->sem_id));
+    for(sem * s = first; s != NULL; s = s->next){
+        print((char*)num_to_string(s->sem_id));
         print("       ");
-        print(num_to_string(s->value));
+        print((char*)num_to_string(s->value));
         print("       ");
-        print(num_to_string(s->lock));
+        print((char*)num_to_string(s->lock));
         print("       ");
         if(s->blocked_pid_list->first == NULL){
             print("No processes are blocked by this sem");

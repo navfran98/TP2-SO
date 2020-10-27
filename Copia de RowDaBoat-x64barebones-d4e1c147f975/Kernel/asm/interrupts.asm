@@ -178,9 +178,7 @@ _systemCallsHandler:
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	;irqHandlerMaster 0
-	; schedulerHandler 0
-	;cli
+	
 	pushState;;,
 
 	mov rdi, rsp ;scheduler recibe como parametro el sp ytho
