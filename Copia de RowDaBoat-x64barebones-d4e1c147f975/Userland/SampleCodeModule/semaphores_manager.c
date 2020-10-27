@@ -8,7 +8,7 @@ static sem * first = NULL;
 static sem * last = NULL;
 uint16_t sem_count = 0;
 extern char* num_to_string(int num);
-//
+
 sem * create_sem(int value){
     sem * new_sem = (sem *) syscall_malloc(sizeof(sem));
     new_sem->value = value;
@@ -85,7 +85,6 @@ int hasPid(sem * s, uint64_t pid){
     return 0;
 }
 
-//no sabemos si hay q usar &(s->lock) o s->lock
 void sem_wait(sem * s, uint64_t pid){
     while(1){
         acquire(&(s->lock));

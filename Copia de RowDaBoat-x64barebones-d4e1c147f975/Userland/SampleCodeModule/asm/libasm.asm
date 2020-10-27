@@ -21,63 +21,11 @@ GLOBAL syscall_unblock
 GLOBAL syscall_get_pipe_id
 
 section .bss
-    numstr resb 10  ; used by num_to_string function 
+    numstr resb 10
 
 section .text
 
-
 ;SYSCALLS PARA MANEJO DE MEMORIA
-syscall_free:
-    push rbp
-    mov rbp, rsp
-    push rax
-    push rbx
-    push rcx
-    push rdx
-
-    mov rax, 6      ;ID para malloc
-    mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
-    mov rcx, 1      ;idem
-    mov rdx, 1      ;idem
-    mov r8, rdi     ;le paso la direccion
-
-    int 80h
-
-    pop rdx
-    pop rcx
-    pop rbx
-    ;pop rax
-
-    mov rsp, rbp
-    pop rbp
-    ret
-
-syscall_check_mem_state:
-    push rbp
-    mov rbp, rsp
-    push rax
-    push rbx
-    push rcx
-    push rdx
-
-    mov rax, 7      ;ID para malloc
-    ;mov rbx, 1      ;no se usa en realidad, TODO: chequear si lo sacamos
-    ;mov rcx, 1      ;idem
-    ;mov rdx, 1      ;Le paso el size
-    mov r8, rdi
-
-    int 80h
-
-    pop rdx
-    pop rcx
-    pop rbx
-    ;pop rax
-
-    mov rsp, rbp
-    pop rbp
-    ret
-
-
 syscall_malloc:
     push rbp
     mov rbp, rsp
@@ -97,12 +45,55 @@ syscall_malloc:
     pop rdx
     pop rcx
     pop rbx
-    ;pop rax
 
     mov rsp, rbp
     pop rbp
     ret
-;;;;;;;;;;;;;;;;;;;;;;;
+
+syscall_free:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 6     
+    mov rbx, 1     
+    mov rcx, 1      
+    mov rdx, 1      
+    mov r8, rdi     
+
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+
+    mov rsp, rbp
+    pop rbp
+    ret
+
+syscall_check_mem_state:
+    push rbp
+    mov rbp, rsp
+    push rax
+    push rbx
+    push rcx
+    push rdx
+
+    mov rax, 7
+    mov r8, rdi
+
+    int 80h
+
+    pop rdx
+    pop rcx
+    pop rbx
+
+    mov rsp, rbp
+    pop rbp
+    ret
 
 ;SYSCALLS READ Y WRITE
 syscall_write:
@@ -115,8 +106,8 @@ syscall_write:
 
     mov rax, 4
     mov rbx, 1
-    mov rcx, rdi ; le paso el string
-    mov rdx, rsi ; le paso la longitud del string
+    mov rcx, rdi 
+    mov rdx, rsi 
 
     int 80h
 
@@ -137,9 +128,9 @@ syscall_read:
     push rdx
 
     mov rax, 3
-    mov rbx, rdi  ; le paso el file_descriptor
-    mov rcx, rsi  ; le paso la direccion de donde tiene que guardar lo leido
-    mov rdx, rdx  ; le paso la cantidad de caracteres que tiene que leer
+    mov rbx, rdi  
+    mov rcx, rsi  
+    mov rdx, rdx  
     int 80h
 
     pop rdx
@@ -149,8 +140,6 @@ syscall_read:
     mov rsp, rbp
     pop rbp
     ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;SYSCALLS CORRESPONDIENTES AL SCHEDULER Y PROCESOS
 syscall_create_process:
@@ -174,7 +163,7 @@ syscall_create_process:
     pop rdx
     pop rcx
     pop rbx
-    ; pop rax
+
     mov rsp, rbp
     pop rbp
     ret
@@ -287,7 +276,7 @@ syscall_kill:
     pop rdx
     pop rcx
     pop rbx
-    ; pop rax
+
     mov rsp, rbp
     pop rbp
     ret
@@ -307,7 +296,7 @@ syscall_change_state:
     pop rdx
     pop rcx
     pop rbx
-    ; pop rax
+
     mov rsp, rbp
     pop rbp
     ret
@@ -327,7 +316,7 @@ syscall_block:
     pop rdx
     pop rcx
     pop rbx
-    ; pop rax
+
     mov rsp, rbp
     pop rbp
     ret
@@ -347,7 +336,7 @@ syscall_unblock:
     pop rdx
     pop rcx
     pop rbx
-    ; pop rax
+
     mov rsp, rbp
     pop rbp
     ret
@@ -368,7 +357,7 @@ syscall_set_priority:
     pop rdx
     pop rcx
     pop rbx
-    ; pop rax
+    
     mov rsp, rbp
     pop rbp
     ret

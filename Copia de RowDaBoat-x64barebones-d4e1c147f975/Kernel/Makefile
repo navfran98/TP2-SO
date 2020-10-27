@@ -16,7 +16,6 @@ all: $(KERNEL)
 #buddy: buddyAux $(KERNEL)
 
 #buddyAux:
-	#esto elimina la primer linea. En nuestro caso, el .h esta vacio, por lo que solo agregamos un define
 #	sed -i '1d' $(MODO) 
 #	echo '#define BUDDY' >> $(MODO)
 

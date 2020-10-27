@@ -1,4 +1,3 @@
-//#include "lib.h"
 #include <stdint.h>
 #include <string.h>
 #include <syscalls.h>
@@ -31,9 +30,9 @@ void print_pipe(char * s, uint64_t pipe_id) {
   }
 }
 
-char * read_pipe(uint64_t pipe_id){
-  char * resp;
+void read_pipe(uint64_t pipe_id, char * resp){
+  // char * resp;
   pipe_read(pipe_id, resp);
-  return resp;
+  // return resp;
 }
 

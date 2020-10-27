@@ -4,7 +4,7 @@
 #include <syscalls.h>
 #include <shellCommands.h>
 #include <test_processes.h>
-#include <test_prio.h>
+
 #include <test_sync.h>
 #include <test_mm.h>
 #include <pipes_manager.h>
@@ -12,6 +12,7 @@
 
 #define FOREGROUND 0
 #define BACKGROUND 1
+#define MAX_SIZE_READ 1024
 
 static char * descriptions[NUMBER_OF_COMMANDS] = 
 { 
@@ -70,7 +71,6 @@ void execute_command(int cmds[2], char * first_parameter, char * second_paramete
     if(n > 1){
         p = create_pipe();
     }
-    // uint64_t aux_pid;
     for(uint8_t i = 0; i < n; i++){
         switch(commands[i]){
         //Comandos de arquitectura
@@ -242,7 +242,6 @@ static void kill(char * s){
     print("Process killed successfully\n");
 }
 
-//ver si hay q recibir con getchar la nueva priority
 static void nice(char * s, char * t){
     int i = 0, j=0;
     while(s[i] != '\0'){
@@ -269,7 +268,6 @@ static void nice(char * s, char * t){
         print("Invalid PID: IDLE and Shell can't be modified\n");
         return;
     }
-    // uint64_t new_priority = string_to_num(input_priority());
     if(syscall_set_priority(pid, priority) == 0){
         print("Error while trying to set a new priority\n");
         return;
@@ -310,13 +308,15 @@ static void cat(){
 }
 
 static void wc(){
-    char * s = read_pipe(syscall_get_pipe_id());
+    char * s = syscall_malloc(MAX_SIZE_READ);
+    read_pipe(syscall_get_pipe_id(), s);
     int lines = 0;
     for(int i=0; s[i] != 0; i++){
         if(s[i] == '\n'){
             lines++;
         }
     }
+    syscall_free(s);
     print("El numero de lineas del input es: ");
     print(num_to_string(lines));
     print("\n");
@@ -325,14 +325,15 @@ static void wc(){
 }
 
 static void filter(){
-    char * s = read_pipe(syscall_get_pipe_id());
-    print(s);
-    int j = 0;
+    // char * s = read_pipe(syscall_get_pipe_id());
+    char * s = syscall_malloc(MAX_SIZE_READ);
+    read_pipe(syscall_get_pipe_id(), s);
     for(int i = 0; s[i] != '\0'; i++){
         if(!is_vocal(s[i])){
             putchar(s[i]);
         }
     }
+    syscall_free(s);
     unblock_pipe_partner(syscall_get_pipe_id());
     syscall_kill(syscall_get_pid());
 }

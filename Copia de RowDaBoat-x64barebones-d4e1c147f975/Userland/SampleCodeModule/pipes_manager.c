@@ -58,8 +58,9 @@ int kill_pipe(uint64_t id){
             if(aux == last){
                 if(aux_prev != aux){
                     last = aux_prev;
+                }else{
+                    last = NULL;
                 }
-                last = NULL;
             }
             aux_prev->next = aux->next;
             syscall_free(aux);
@@ -71,7 +72,7 @@ int kill_pipe(uint64_t id){
     return 0;
 }
 
-//MODIFICAR PARA Q RECIBA SOLO EL PIPE_ID Y EL STRING
+
 int pipe_write(uint64_t pipe_id, char * addr, int n){
     pipe * p = get_pipe(pipe_id);
     int i;
@@ -91,11 +92,10 @@ int pipe_write(uint64_t pipe_id, char * addr, int n){
     return n; 
 }
 
-//MODIFICAR PARA Q RECIBA SOLO EL PIPE_ID Y EL BUFFER QUE VA A LLENAR
+
 int pipe_read(uint64_t pipe_id, char* addr){
     pipe * p = get_pipe(pipe_id);
     int i=0;
-    // for(i = 0; i < n; i++){
     while(i<BUFFER_SIZE){
         while(1){
             acquire(&p->lock);

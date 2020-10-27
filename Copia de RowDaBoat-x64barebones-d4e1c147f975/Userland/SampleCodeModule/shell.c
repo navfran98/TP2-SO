@@ -11,7 +11,7 @@ extern char* num_to_string(int num);
 static void shell_main();
 static void search_command(char buffer[], char * first_parameter, char * second_parameter, int cmds_ground[2], int cmds[2]);
 static char shell_buffer[SHELL_BUFFER_SIZE] = {'\0'};
-static uint8_t k = 0; // to move across the buffer
+static uint8_t buffer_k = 0;
 
 
 void start_shell() {
@@ -25,8 +25,8 @@ static void shell_main() {
         c = getChar();
         if(c != -1) {
             if(c == '\n') {
-                putchar(c);     // print the '\n' to move to the next line
-                shell_buffer[k++] = '\0';
+                putchar(c);
+                shell_buffer[buffer_k++] = '\0';
                 int cmds[2] = {-1, -1};
                 int cmds_ground[2] = {FOREGROUND, FOREGROUND};
                 char * first_parameter = "X";
@@ -45,26 +45,22 @@ static void shell_main() {
                 for(int i=0; shell_buffer[i] != '\0'; i++) {
                     shell_buffer[i] = '\0';
                 }
-                k = 0;
+                buffer_k = 0;
                 print(">>");
             }
-            else if(c=='\b' && k>0) {
-                shell_buffer[k--] = '\0';
+            else if(c == '\b' && buffer_k > 0) {
+                shell_buffer[buffer_k--] = '\0';
                 putchar(c);
             }
-            else { // it is a normal character
-                if(k < SHELL_BUFFER_SIZE) {
-                    shell_buffer[k++] = c;
+            else {
+                if(buffer_k < SHELL_BUFFER_SIZE) {
+                    shell_buffer[buffer_k++] = c;
                     putchar(c);
                 }
             }
         }
     }
 }
-
-//HACER QUE CUANDO RECIBE UN '&' ALFINAL SIGINIFICA QUE LO CREA EN BACKGROUND
-//PERMITIR QUE EJECUTAR DOS PROCESOS USANDO '|'. Ejemplo: p1 | p2
-//VER DE GUARDAR EL DONDE ESCRIBIR Y DONDE LEER PARA LOS PROCESOS CAT, FILTER, WC (NACHO CREA UN FG TMB)
 
 int get_command_number(char * s, uint8_t * n){
     uint8_t i = *n;

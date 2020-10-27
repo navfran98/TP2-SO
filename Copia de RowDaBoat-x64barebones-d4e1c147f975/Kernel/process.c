@@ -5,10 +5,9 @@
 
 
 #define NULL (void*) 0
-#define SIZE_OF_STACK 1000 //FIJARSE DESPUES
+#define SIZE_OF_STACK 1000
 
 uint64_t process_count = 0;
-//ACORDARNOS REVISAR COMENTARIOS DEL INIT_STACK
 pcb * generate_process(char * name, void * rip, uint64_t pipe_id,  process_type type){
 
     void * stack_ptr = my_malloc(SIZE_OF_STACK);
@@ -53,6 +52,6 @@ uint64_t create_process(char * name, void * rip, uint64_t pipe_id,  process_type
 }
 
 void free_process(pcb * p){
-    my_free(p->stack);//... hago free de todo lo que hice malloc.
+    my_free(p->stack);
     my_free(p);
 }

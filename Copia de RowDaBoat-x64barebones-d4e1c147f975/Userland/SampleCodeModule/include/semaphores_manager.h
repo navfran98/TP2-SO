@@ -12,7 +12,6 @@ typedef struct list_header{
     list_node * last;
 } list_header;
 
-//no se de q tipo hacer las variables
 typedef struct semaphore {
     uint16_t sem_id;
     uint8_t value;

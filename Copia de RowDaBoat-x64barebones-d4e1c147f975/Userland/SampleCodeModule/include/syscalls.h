@@ -1,6 +1,4 @@
 #include <stdint.h>
-// #define ID_READ 1
-// #define ID_WRITE 2
 
 //Memory Manager 
 extern void * syscall_malloc(unsigned size);

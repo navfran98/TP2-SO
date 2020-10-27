@@ -10,7 +10,6 @@ typedef struct pipe {
     char buffer[BUFFER_SIZE];
     unsigned int nread;  //number of bytes read
     unsigned int nwrite; //number of bytes written
-    //el incluye cantidad de bytes a leer y a escribir
     struct pipe * next;
 } pipe;
 
@@ -21,5 +20,5 @@ pipe * get_pipe(uint64_t id);
 void unblock_pipe_partner(uint64_t pipe_id);
 int kill_pipe(uint64_t id);
 int pipe_write(uint64_t pipe_id, char * addr, int n);
-int pipe_read(uint64_t pipe_id,char* addr/*,int n*/);
+int pipe_read(uint64_t pipe_id,char* addr);
 void print_all_pipes();

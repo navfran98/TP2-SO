@@ -3,24 +3,6 @@
 #include <stdint.h>
 #include <lib.h>
 
-#define NULL (void *) 0
-
-//mover las estructuras al .h
-typedef struct mem_slot{
-	struct mem_slot * next;
-	struct mem_slot * prev;
-	void * location;
-	uint64_t size;
-} slot;
-
-typedef struct header{
-	slot * list;
-	slot * used;
-	uint64_t used_mem;
-	uint64_t free_mem;
-	uint64_t total_mem;
-} list_header;
-
 static list_header mem;
 
 void free_list_init(void * base_mem, uint64_t total_mem){

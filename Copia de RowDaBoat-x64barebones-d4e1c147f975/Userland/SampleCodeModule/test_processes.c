@@ -3,12 +3,11 @@
 #include <syscalls.h>
 #include <string.h>
 
-//TO BE INCLUDED
 void endless_loop(){
   while(1);
 }
 
-#define MAX_PROCESSES 10 //Should be around 80% of the the processes handled by the kernel
+#define MAX_PROCESSES 10
 
 enum State {ERROR, RUNNING, BLOCKED, KILLED};
 
@@ -27,13 +26,12 @@ void test_processes(){
 
     print("ENTRANDO AL WHILEEEEEEEE\n");
 
-    // Create MAX_PROCESSES processes
     print("Creating processes...\n");
     for(rq = 0; rq < MAX_PROCESSES; rq++){
-      p_rqs[rq].pid = syscall_create_process("endless_loop", &endless_loop, -1, 0);  // TODO: Port this call as required
+      p_rqs[rq].pid = syscall_create_process("endless_loop", &endless_loop, -1, 0);  
 
-      if (p_rqs[rq].pid == -1){                           // TODO: Port this as required
-        print("Error creating process\n");               // TODO: Port this as required
+      if (p_rqs[rq].pid == -1){                         
+        print("Error creating process\n");             
         return;
       }else{
         p_rqs[rq].state = RUNNING;
@@ -52,8 +50,8 @@ void test_processes(){
         switch(action){
           case 0:
             if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED){
-              if (syscall_kill(p_rqs[rq].pid) == 0){          // TODO: Port this as required
-                print("Error killing process\n");        // TODO: Port this as required
+              if (syscall_kill(p_rqs[rq].pid) == 0){          
+                print("Error killing process\n");        
                 return;
               }
               p_rqs[rq].state = KILLED; 
@@ -63,8 +61,8 @@ void test_processes(){
 
           case 1:
             if (p_rqs[rq].state == RUNNING){
-              if(syscall_block(p_rqs[rq].pid) == 0){          // TODO: Port this as required
-                print("Error blocking process\n");       // TODO: Port this as required
+              if(syscall_block(p_rqs[rq].pid) == 0){          
+                print("Error blocking process\n");       
                 return;
               }
               p_rqs[rq].state = BLOCKED; 
@@ -77,8 +75,8 @@ void test_processes(){
       print("UNBLOCKING PROCESSES\n");
       for(rq = 0; rq < MAX_PROCESSES; rq++)
         if (p_rqs[rq].state == BLOCKED && GetUniform(2) % 2){
-          if(syscall_unblock(p_rqs[rq].pid) == 0){            // TODO: Port this as required
-            print("Error unblocking process\n");         // TODO: Port this as required
+          if(syscall_unblock(p_rqs[rq].pid) == 0){            
+            print("Error unblocking process\n");         
             return;
           }
           p_rqs[rq].state = RUNNING; 

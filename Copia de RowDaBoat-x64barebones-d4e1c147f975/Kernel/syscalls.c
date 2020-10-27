@@ -29,15 +29,12 @@
 #define GET_PIPE_ID 21
 
 
-//CAMBIAR NOMBRES DE LOS PARAMETROS POR NOMBRES GENERALES PARA NO CONFUNDIR
 extern int segundos();
 extern int minutos();
 extern int horas();
-//cambiar todos los tipos por uint64_t
                         //rdi         rsi           rdx          rcx          r8               r9 
 void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6) { 
     switch(ID){
-        //estas 3 dsp van a llamar a la funcion free, malloc y state: y luego se corre la de freelist o la de buddy segun sea el caso
         case FREE:{ 
             my_free((void *) arg5);
             break;
@@ -85,7 +82,7 @@ void syscall_dispatcher(int ID, uint64_t arg2, char * arg3, uint64_t arg4, uint6
         }
 
         case SET_PRIORITY_PROCESS:{
-            return set_priority(arg2, arg4);
+            set_priority(arg2, arg4);
             break;
         }
 
